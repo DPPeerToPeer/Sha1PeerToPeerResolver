@@ -3,9 +3,12 @@ package org.example.sha1PeerToPeer.connections
 import kotlinx.coroutines.flow.Flow
 import org.example.sha1PeerToPeer.domain.models.Node
 
-interface ConnectionsHandler {
+class ConnectionsHandler : IConnectionsHandler {
+    override suspend fun sendNodeMessage(message: Pair<Node, NodeMessage>) {
+        TODO("Not yet implemented")
+    }
 
-    suspend fun sendNodeMessage(message: Pair<Node, NodeMessage>)
-
-    fun listenNodesMessages(): Flow<Pair<Node, NodeMessage>>
+    override fun listenNodesMessages(): Flow<Pair<Node, NodeMessage>> {
+        TODO("Not yet implemented")
+    }
 }

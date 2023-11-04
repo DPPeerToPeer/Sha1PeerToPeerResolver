@@ -16,6 +16,8 @@ repositories {
 
 dependencies {
     implementation(compose.desktop.currentOs)
+    implementation("org.kodein.di:kodein-di:7.19.0")
+
     testImplementation(kotlin("test"))
     testImplementation("io.mockk:mockk:1.13.8")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")

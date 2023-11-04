@@ -1,12 +1,12 @@
 package org.example.sha1PeerToPeer.domain.useCases
 
-import org.example.sha1PeerToPeer.connections.ConnectionsHandler
+import org.example.sha1PeerToPeer.connections.IConnectionsHandler
 import org.example.sha1PeerToPeer.connections.NodeMessage
 import org.example.sha1PeerToPeer.data.repository.calculation.ICalculationRepository
 import org.example.sha1PeerToPeer.data.repository.nodes.INodesRepository
 
 class HandleIncomingNodeMessagesUseCase constructor(
-    private val connectionsHandler: ConnectionsHandler,
+    private val connectionsHandler: IConnectionsHandler,
     private val calculationRepository: ICalculationRepository,
     private val nodesRepository: INodesRepository,
 ) {

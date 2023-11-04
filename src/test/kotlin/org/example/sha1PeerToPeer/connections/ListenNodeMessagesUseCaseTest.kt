@@ -12,7 +12,7 @@ import kotlin.test.Test
 
 class ListenNodeMessagesUseCaseTest : BaseTest() {
     @MockK
-    private lateinit var connectionsHandler: ConnectionsHandler
+    private lateinit var connectionsHandler: IConnectionsHandler
 
     @InjectMockKs
     private lateinit var listenNodeMessagesUseCase: ListenNodeMessagesUseCase
