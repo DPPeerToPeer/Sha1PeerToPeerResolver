@@ -1,11 +1,11 @@
 package org.example.sha1PeerToPeer.connections
 
+import app.cash.turbine.test
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.example.sha1PeerToPeer.utils.BaseTest
 import kotlin.test.Test
@@ -23,7 +23,9 @@ class ListenNodeMessagesUseCaseTest : BaseTest() {
             connectionsHandler.listenNodesMessages()
         } returns flowOf()
 
-        listenNodeMessagesUseCase.invoke().toList()
+        listenNodeMessagesUseCase.invoke().test {
+            awaitComplete()
+        }
 
         verify(exactly = 1) {
             connectionsHandler.listenNodesMessages()
