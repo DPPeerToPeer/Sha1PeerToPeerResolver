@@ -1,7 +1,7 @@
 package org.example.sha1PeerToPeer.data.repository.nodes
 
+import com.example.common.models.SocketId
 import org.example.sha1PeerToPeer.domain.models.Node
-import org.example.sha1PeerToPeer.domain.models.SocketId
 
 interface INodesRepository {
 

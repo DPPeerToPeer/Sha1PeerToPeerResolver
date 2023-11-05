@@ -1,7 +1,7 @@
 package org.example.sha1PeerToPeer.data.api.nodes
 
 import com.example.common.models.Batch
-import org.example.sha1PeerToPeer.domain.models.CalculationResult
+import com.example.common.models.CalculationResult
 
 /**
  * Each method send message to all nodes from NodesRepository

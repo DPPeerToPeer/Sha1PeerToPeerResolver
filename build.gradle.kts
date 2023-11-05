@@ -17,10 +17,10 @@ repositories {
 
 dependencies {
     implementation(project("common"))
+    implementation(project("network"))
 
     implementation(compose.desktop.currentOs)
     implementation("org.kodein.di:kodein-di:7.19.0")
-    implementation("io.ktor:ktor-network:2.3.5")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 
     testImplementation(kotlin("test"))

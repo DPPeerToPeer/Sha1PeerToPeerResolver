@@ -1,5 +1,9 @@
-package org.example.sha1PeerToPeer.connections
+package com.example.network.internal
 
+import com.example.common.models.SocketId
+import com.example.network.IConnectionsHandler
+import com.example.network.IpAndPort
+import com.example.network.NodeMessage
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.util.network.*
@@ -12,11 +16,9 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import org.example.sha1PeerToPeer.domain.models.IpAndPort
-import org.example.sha1PeerToPeer.domain.models.SocketId
 import java.util.*
 
-class ConnectionsHandler(
+internal class ConnectionsHandler(
     private val scope: CoroutineScope,
 ) : IConnectionsHandler {
 

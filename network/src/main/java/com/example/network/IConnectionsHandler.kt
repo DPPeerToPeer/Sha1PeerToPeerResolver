@@ -1,8 +1,7 @@
-package org.example.sha1PeerToPeer.connections
+package com.example.network
 
+import com.example.common.models.SocketId
 import kotlinx.coroutines.flow.Flow
-import org.example.sha1PeerToPeer.domain.models.IpAndPort
-import org.example.sha1PeerToPeer.domain.models.SocketId
 
 interface IConnectionsHandler {
 

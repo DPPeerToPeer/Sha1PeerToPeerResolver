@@ -1,9 +1,9 @@
 package org.example.sha1PeerToPeer.data.repository.calculation
 
 import com.example.common.models.Batch
+import com.example.common.models.SocketId
 import kotlinx.coroutines.flow.StateFlow
 import org.example.sha1PeerToPeer.domain.models.BatchState
-import org.example.sha1PeerToPeer.domain.models.SocketId
 
 interface ICalculationRepository {
 

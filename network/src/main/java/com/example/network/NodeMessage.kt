@@ -1,8 +1,8 @@
-package org.example.sha1PeerToPeer.connections
+package com.example.network
 
 import com.example.common.models.Batch
+import com.example.common.models.CalculationResult
 import kotlinx.serialization.Serializable
-import org.example.sha1PeerToPeer.domain.models.CalculationResult
 
 @Serializable
 sealed interface NodeMessage {

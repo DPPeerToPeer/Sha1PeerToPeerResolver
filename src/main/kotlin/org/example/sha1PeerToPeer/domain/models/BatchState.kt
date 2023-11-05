@@ -1,5 +1,7 @@
 package org.example.sha1PeerToPeer.domain.models
 
+import com.example.common.models.SocketId
+
 sealed interface BatchState {
 
     object Available : BatchState

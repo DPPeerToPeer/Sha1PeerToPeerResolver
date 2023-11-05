@@ -1,14 +1,15 @@
-package org.example.sha1PeerToPeer.connections
+package com.example.network.internal
 
+import com.example.common.models.SocketId
+import com.example.network.NodeMessage
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.isActive
 import kotlinx.serialization.json.Json
-import org.example.sha1PeerToPeer.domain.models.SocketId
 import kotlin.coroutines.coroutineContext
 
-class SingleNodeConnectionHandler(
+internal class SingleNodeConnectionHandler(
     private val socket: Socket,
     val socketId: SocketId,
     private val messageChannel: Channel<Pair<SocketId, NodeMessage>>,

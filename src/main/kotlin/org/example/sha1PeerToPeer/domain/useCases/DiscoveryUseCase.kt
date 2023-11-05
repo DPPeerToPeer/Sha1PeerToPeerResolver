@@ -1,6 +1,6 @@
 package org.example.sha1PeerToPeer.domain.useCases
 
-import org.example.sha1PeerToPeer.connections.IConnectionsHandler
+import com.example.network.IConnectionsHandler
 import org.example.sha1PeerToPeer.data.api.discovery.IDiscoveryApi
 import org.example.sha1PeerToPeer.data.api.nodes.INodesApi
 import org.example.sha1PeerToPeer.data.repository.nodes.INodesRepository

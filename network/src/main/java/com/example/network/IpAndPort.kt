@@ -1,4 +1,4 @@
-package org.example.sha1PeerToPeer.domain.models
+package com.example.network
 
 data class IpAndPort(
     val ip: String,

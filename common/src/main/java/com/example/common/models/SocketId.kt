@@ -1,4 +1,4 @@
-package org.example.sha1PeerToPeer.domain.models
+package com.example.common.models
 
 @JvmInline
 value class SocketId(val id: String)

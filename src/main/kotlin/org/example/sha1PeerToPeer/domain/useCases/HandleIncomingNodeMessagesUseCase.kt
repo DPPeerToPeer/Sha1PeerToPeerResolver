@@ -1,7 +1,7 @@
 package org.example.sha1PeerToPeer.domain.useCases
 
-import org.example.sha1PeerToPeer.connections.IConnectionsHandler
-import org.example.sha1PeerToPeer.connections.NodeMessage
+import com.example.network.IConnectionsHandler
+import com.example.network.NodeMessage
 import org.example.sha1PeerToPeer.data.repository.calculation.ICalculationRepository
 import org.example.sha1PeerToPeer.data.repository.nodes.INodesRepository
 import org.example.sha1PeerToPeer.domain.models.Node

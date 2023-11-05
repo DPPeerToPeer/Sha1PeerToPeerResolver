@@ -1,9 +1,9 @@
 package org.example.sha1PeerToPeer.data.repository.nodes
 
+import com.example.common.models.SocketId
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.example.sha1PeerToPeer.domain.models.Node
 import org.example.sha1PeerToPeer.domain.models.NodeState
-import org.example.sha1PeerToPeer.domain.models.SocketId
 
 class NodesRepository : INodesRepository {
 

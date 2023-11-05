@@ -1,6 +1,8 @@
-package org.example.sha1PeerToPeer.connections
+package com.example.network.useCases
 
-import org.example.sha1PeerToPeer.domain.models.SocketId
+import com.example.common.models.SocketId
+import com.example.network.IConnectionsHandler
+import com.example.network.NodeMessage
 
 class SendNodeMessageUseCase(
     private val connectionsHandler: IConnectionsHandler,

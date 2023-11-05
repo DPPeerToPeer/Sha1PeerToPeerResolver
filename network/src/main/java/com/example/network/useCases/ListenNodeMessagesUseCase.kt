@@ -1,7 +1,9 @@
-package org.example.sha1PeerToPeer.connections
+package com.example.network.useCases
 
+import com.example.common.models.SocketId
+import com.example.network.IConnectionsHandler
+import com.example.network.NodeMessage
 import kotlinx.coroutines.flow.Flow
-import org.example.sha1PeerToPeer.domain.models.SocketId
 
 class ListenNodeMessagesUseCase(
     private val connectionsHandler: IConnectionsHandler,
