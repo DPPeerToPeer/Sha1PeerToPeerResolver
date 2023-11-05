@@ -1,10 +1,10 @@
 package com.example.nodes.domain.useCase
 
 import com.example.common.models.GetCurrentTimeUseCase
-import com.example.nodes.data.api.INodesBroadcastApi
+import com.example.nodes.data.repository.broadcast.INodesBroadcastRepository
 
 class SendHealthUseCase(
-    private val nodesApi: INodesBroadcastApi,
+    private val nodesApi: INodesBroadcastRepository,
     private val getCurrentTimeUseCase: GetCurrentTimeUseCase,
 ) {
 

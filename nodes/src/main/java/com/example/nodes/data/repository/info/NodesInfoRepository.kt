@@ -1,7 +1,7 @@
-package com.example.nodes.data.repository
+package com.example.nodes.data.repository.info
 
+import com.example.common.models.Node
 import com.example.common.models.SocketId
-import com.example.nodes.domain.models.Node
 import com.example.nodes.domain.models.NodeState
 import kotlinx.coroutines.flow.MutableStateFlow
 

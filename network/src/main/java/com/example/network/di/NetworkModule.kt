@@ -1,8 +1,14 @@
 package com.example.network.di
 
+import com.example.network.IDiscoveryUseCase
+import com.example.network.IListenNodeMessagesUseCase
+import com.example.network.IRunConnectionsHandlerUseCase
+import com.example.network.ISendNodeMessageUseCase
 import com.example.network.internal.ConnectionsHandler
 import com.example.network.internal.IConnectionsHandler
+import com.example.network.internal.useCases.DiscoveryUseCase
 import com.example.network.internal.useCases.ListenNodeMessagesUseCase
+import com.example.network.internal.useCases.RunConnectionsHandlerUseCase
 import com.example.network.internal.useCases.SendNodeMessageUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -17,10 +23,16 @@ val networkModule = DI.Module(name = "Network") {
             scope = CoroutineScope(SupervisorJob()),
         )
     }
-    bindProvider<ListenNodeMessagesUseCase> {
+    bindProvider<IListenNodeMessagesUseCase> {
         ListenNodeMessagesUseCase(instance())
     }
-    bindProvider<SendNodeMessageUseCase> {
+    bindProvider<ISendNodeMessageUseCase> {
         SendNodeMessageUseCase(instance())
+    }
+    bindProvider<IRunConnectionsHandlerUseCase> {
+        RunConnectionsHandlerUseCase(instance())
+    }
+    bindProvider<IDiscoveryUseCase> {
+        DiscoveryUseCase(instance())
     }
 }

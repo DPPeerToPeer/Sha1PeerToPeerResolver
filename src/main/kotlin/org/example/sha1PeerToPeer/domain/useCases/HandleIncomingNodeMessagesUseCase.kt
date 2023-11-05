@@ -1,10 +1,10 @@
 package org.example.sha1PeerToPeer.domain.useCases
 
 import com.example.calculation.ICalculationRepository
+import com.example.common.models.Node
 import com.example.network.IListenNodeMessagesUseCase
 import com.example.network.models.NodeMessage
-import com.example.nodes.data.repository.INodesInfoRepository
-import com.example.nodes.domain.models.Node
+import com.example.nodes.data.repository.info.INodesInfoRepository
 
 class HandleIncomingNodeMessagesUseCase(
     private val listenNodeMessagesUseCase: IListenNodeMessagesUseCase,

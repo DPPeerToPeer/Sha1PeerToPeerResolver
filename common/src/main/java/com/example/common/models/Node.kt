@@ -1,6 +1,4 @@
-package com.example.nodes.domain.models
-
-import com.example.common.models.SocketId
+package com.example.common.models
 
 sealed interface Node {
 

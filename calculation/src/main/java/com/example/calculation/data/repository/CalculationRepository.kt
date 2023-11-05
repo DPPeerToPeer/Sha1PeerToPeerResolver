@@ -4,14 +4,14 @@ import com.example.calculation.ICalculationRepository
 import com.example.calculation.domain.models.BatchState
 import com.example.common.models.Batch
 import com.example.common.models.SocketId
-import com.example.nodes.data.api.INodesBroadcastApi
+import com.example.nodes.data.repository.broadcast.INodesBroadcastRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
 
 internal class CalculationRepository(
-    private val nodesApi: INodesBroadcastApi,
+    private val nodesApi: INodesBroadcastRepository,
 ) : ICalculationRepository {
 
     override val batches: StateFlow<Map<Batch, BatchState>>
