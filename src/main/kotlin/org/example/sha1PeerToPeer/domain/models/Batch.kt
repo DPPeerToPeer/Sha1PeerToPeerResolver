@@ -1,5 +1,8 @@
 package org.example.sha1PeerToPeer.domain.models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Batch(
     val start: String,
     val end: String,

@@ -3,6 +3,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     kotlin("jvm")
     id("org.jetbrains.compose")
+    kotlin("plugin.serialization") version "1.8.20"
 }
 
 group = "com.example"
@@ -17,6 +18,8 @@ repositories {
 dependencies {
     implementation(compose.desktop.currentOs)
     implementation("org.kodein.di:kodein-di:7.19.0")
+    implementation("io.ktor:ktor-network:2.3.5")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 
     testImplementation(kotlin("test"))
     testImplementation("io.mockk:mockk:1.13.8")
