@@ -1,5 +1,7 @@
-package org.example.sha1PeerToPeer.data.repository.calculation
+package com.example.calculation.data.repository
 
+import com.example.calculation.ICalculationRepository
+import com.example.calculation.domain.models.BatchState
 import com.example.common.models.Batch
 import com.example.common.models.SocketId
 import com.example.nodes.data.api.INodesApi
@@ -7,9 +9,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
-import org.example.sha1PeerToPeer.domain.models.BatchState
 
-class CalculationRepository(
+internal class CalculationRepository(
     private val nodesApi: INodesApi,
 ) : ICalculationRepository {
 

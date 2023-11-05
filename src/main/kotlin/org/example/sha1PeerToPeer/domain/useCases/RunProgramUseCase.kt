@@ -1,8 +1,7 @@
 package org.example.sha1PeerToPeer.domain.useCases
 
-import com.example.calculation.MakeCalculationInBatchUseCase
+import com.example.calculation.ICalculationRepository
 import kotlinx.coroutines.*
-import org.example.sha1PeerToPeer.data.repository.calculation.ICalculationRepository
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -10,7 +9,6 @@ class RunProgramUseCase(
     private val discoveryUseCase: DiscoveryUseCase,
     private val calculationRepository: ICalculationRepository,
     private val handleIncomingNodeMessagesUseCase: HandleIncomingNodeMessagesUseCase,
-    private val runCalculationInBatchUseCase: MakeCalculationInBatchUseCase,
     private val sendHealthUseCase: SendHealthUseCase,
     private val removeNotActiveNodesUseCase: RemoveNotActiveNodesUseCase,
 ) {
@@ -27,7 +25,7 @@ class RunProgramUseCase(
                 val batch = calculationRepository.getAvailableBatchAndMarkMine()
                 batch?.let {
                     val job = launch {
-                        runCalculationInBatchUseCase(batch = batch)
+                        calculationRepository.startCalculation(batch = batch)
                     }
                     while (!job.isCompleted) {
                         ensureActive()
