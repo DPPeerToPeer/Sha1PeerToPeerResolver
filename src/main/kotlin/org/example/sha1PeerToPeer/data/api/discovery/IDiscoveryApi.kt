@@ -7,5 +7,5 @@ interface IDiscoveryApi {
     suspend fun joinToSession(
         hashToFind: String,
         myPort: Int,
-    ): List<Node>
+    ): List<Node.DiscoveredNode>
 }

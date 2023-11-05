@@ -4,8 +4,9 @@ import org.example.sha1PeerToPeer.connections.IConnectionsHandler
 import org.example.sha1PeerToPeer.connections.NodeMessage
 import org.example.sha1PeerToPeer.data.repository.calculation.ICalculationRepository
 import org.example.sha1PeerToPeer.data.repository.nodes.INodesRepository
+import org.example.sha1PeerToPeer.domain.models.Node
 
-class HandleIncomingNodeMessagesUseCase constructor(
+class HandleIncomingNodeMessagesUseCase(
     private val connectionsHandler: IConnectionsHandler,
     private val calculationRepository: ICalculationRepository,
     private val nodesRepository: INodesRepository,
@@ -13,15 +14,22 @@ class HandleIncomingNodeMessagesUseCase constructor(
 
     suspend operator fun invoke() {
         connectionsHandler.listenNodesMessages()
-            .collect { (node, message) ->
+            .collect { (socketId, message) ->
                 when (message) {
                     is NodeMessage.Discovery -> {
-                        nodesRepository.addNewNode(node = node)
+                        nodesRepository.upsertNode(
+                            node = Node.DiscoveredNode(
+                                socketId = socketId,
+                                name = message.name,
+                                ip = message.ip,
+                                port = message.port,
+                            ),
+                        )
                     }
                     is NodeMessage.StartedCalculation -> {
-                        calculationRepository.markBatchInProgressAndAdjust(
+                        calculationRepository.markBatchInProgressIfWasFirst(
                             batch = message.batch,
-                            node = node,
+                            nodeId = socketId,
                             timestamp = message.timestamp,
                         )
                     }
@@ -30,7 +38,7 @@ class HandleIncomingNodeMessagesUseCase constructor(
                     }
                     is NodeMessage.Health -> {
                         nodesRepository.updateHealth(
-                            node = node,
+                            socketId = socketId,
                             timestamp = message.timestamp,
                         )
                     }

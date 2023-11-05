@@ -2,9 +2,14 @@ package org.example.sha1PeerToPeer.domain.models
 
 sealed interface BatchState {
 
-    object Empty : BatchState
+    object Available : BatchState
 
-    data class InProgress(val node: Node) : BatchState
+    data class InProgressOtherNode(
+        val nodeId: SocketId,
+        val startTimestamp: Long,
+    ) : BatchState
+
+    data class InProgressMine(val startTimestamp: Long) : BatchState
 
     object Checked : BatchState
 }

@@ -2,15 +2,19 @@ package org.example.sha1PeerToPeer.connections
 
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
-import kotlinx.coroutines.*
+import io.ktor.util.network.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import org.example.sha1PeerToPeer.domain.models.IpAndPort
 import org.example.sha1PeerToPeer.domain.models.SocketId
-import java.util.UUID
-import kotlin.coroutines.coroutineContext
+import java.util.*
 
 class ConnectionsHandler(
     private val scope: CoroutineScope,
@@ -18,6 +22,24 @@ class ConnectionsHandler(
 
     private val sockets: MutableStateFlow<List<SingleNodeConnectionHandler>> = MutableStateFlow(emptyList())
     private val messageChannel: Channel<Pair<SocketId, NodeMessage>> = Channel(Channel.BUFFERED)
+
+    override fun runAndReturnLocalIpAndPort(): IpAndPort {
+        val selectorManager = SelectorManager(dispatcher = Dispatchers.IO)
+        val serverSocket = aSocket(selectorManager).tcp().bind()
+
+        scope.launch {
+            while (coroutineContext.isActive) {
+                val socket: Socket = serverSocket.accept()
+                onNewSocket(socket)
+            }
+        }
+        return serverSocket.localAddress.toJavaAddress().let {
+            IpAndPort(
+                ip = it.address,
+                port = it.port,
+            )
+        }
+    }
 
     override suspend fun sendNodeMessage(message: Pair<SocketId, NodeMessage>) {
         sockets.value.firstOrNull {
@@ -39,16 +61,6 @@ class ConnectionsHandler(
         }
         scope.launch {
             singleConnectionsHandler.listenIncomingMessages()
-        }
-    }
-
-    suspend fun run() {
-        val selectorManager = SelectorManager(dispatcher = Dispatchers.IO)
-        val serverSocket = aSocket(selectorManager).tcp().bind()
-
-        while (coroutineContext.isActive) {
-            val socket: Socket = serverSocket.accept()
-            onNewSocket(socket)
         }
     }
 }
