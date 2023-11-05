@@ -1,5 +1,6 @@
 package org.example.sha1PeerToPeer.domain.useCases
 
+import com.example.calculation.MakeCalculationInBatchUseCase
 import kotlinx.coroutines.*
 import org.example.sha1PeerToPeer.data.repository.calculation.ICalculationRepository
 import kotlin.time.Duration.Companion.minutes
