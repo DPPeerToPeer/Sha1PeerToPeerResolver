@@ -1,7 +1,8 @@
 package com.example.network.internal
 
 import app.cash.turbine.test
-import com.example.network.internal.useCases.ListenNodeMessagesUseCase
+import com.example.network.internal.data.nodes.IConnectionsHandler
+import com.example.network.internal.useCase.ListenNodeMessagesUseCase
 import com.example.network.utils.BaseTest
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

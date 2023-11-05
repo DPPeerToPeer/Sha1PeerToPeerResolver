@@ -1,4 +1,4 @@
-package com.example.network.internal
+package com.example.network.internal.data.discovery
 
 import com.example.common.models.Node
 

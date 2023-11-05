@@ -1,7 +1,7 @@
-package com.example.network.internal.useCases
+package com.example.network.internal.useCase
 
 import com.example.network.IRunConnectionsHandlerUseCase
-import com.example.network.internal.IConnectionsHandler
+import com.example.network.internal.data.nodes.IConnectionsHandler
 import com.example.network.models.IpAndPort
 
 internal class RunConnectionsHandlerUseCase(

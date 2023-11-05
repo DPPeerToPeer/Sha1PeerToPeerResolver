@@ -1,8 +1,8 @@
-package com.example.network.internal.useCases
+package com.example.network.internal.useCase
 
 import com.example.common.models.Node
 import com.example.network.IDiscoveryUseCase
-import com.example.network.internal.IDiscoveryApi
+import com.example.network.internal.data.discovery.IDiscoveryApi
 
 internal class DiscoveryUseCase(
     private val discoveryApi: IDiscoveryApi,

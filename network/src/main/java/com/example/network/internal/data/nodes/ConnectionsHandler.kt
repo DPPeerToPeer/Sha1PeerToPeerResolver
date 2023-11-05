@@ -1,4 +1,4 @@
-package com.example.network.internal
+package com.example.network.internal.data.nodes
 
 import com.example.common.models.SocketId
 import com.example.network.models.IpAndPort
