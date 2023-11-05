@@ -1,6 +1,6 @@
 package org.example.sha1PeerToPeer.domain.useCases
 
-import org.example.sha1PeerToPeer.data.api.nodes.INodesApi
+import com.example.nodes.data.api.INodesApi
 
 class SendHealthUseCase(
     private val nodesApi: INodesApi,

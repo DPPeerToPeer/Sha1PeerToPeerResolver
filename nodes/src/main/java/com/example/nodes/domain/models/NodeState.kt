@@ -1,4 +1,4 @@
-package org.example.sha1PeerToPeer.domain.models
+package com.example.nodes.domain.models
 
 data class NodeState(
     val lastSeen: Long,

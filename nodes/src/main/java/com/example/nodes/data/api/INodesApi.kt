@@ -1,4 +1,4 @@
-package org.example.sha1PeerToPeer.data.api.nodes
+package com.example.nodes.data.api
 
 import com.example.common.models.Batch
 import com.example.common.models.CalculationResult

@@ -1,6 +1,6 @@
 package org.example.sha1PeerToPeer.data.api.discovery
 
-import org.example.sha1PeerToPeer.domain.models.Node
+import com.example.nodes.domain.models.Node
 
 interface IDiscoveryApi {
 

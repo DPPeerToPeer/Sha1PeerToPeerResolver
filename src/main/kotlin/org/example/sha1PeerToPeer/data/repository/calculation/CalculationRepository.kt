@@ -2,11 +2,11 @@ package org.example.sha1PeerToPeer.data.repository.calculation
 
 import com.example.common.models.Batch
 import com.example.common.models.SocketId
+import com.example.nodes.data.api.INodesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
-import org.example.sha1PeerToPeer.data.api.nodes.INodesApi
 import org.example.sha1PeerToPeer.domain.models.BatchState
 
 class CalculationRepository(

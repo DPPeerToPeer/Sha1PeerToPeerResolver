@@ -1,9 +1,9 @@
 package org.example.sha1PeerToPeer.domain.useCases
 
 import com.example.network.IRunConnectionsHandlerUseCase
+import com.example.nodes.data.api.INodesApi
+import com.example.nodes.data.repository.INodesRepository
 import org.example.sha1PeerToPeer.data.api.discovery.IDiscoveryApi
-import org.example.sha1PeerToPeer.data.api.nodes.INodesApi
-import org.example.sha1PeerToPeer.data.repository.nodes.INodesRepository
 
 class DiscoveryUseCase(
     private val discoveryApi: IDiscoveryApi,

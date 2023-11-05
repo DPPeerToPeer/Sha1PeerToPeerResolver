@@ -15,3 +15,4 @@ rootProject.name = "Sha1PeerToPeerResolver"
 include("common")
 include("network")
 include("calculation")
+include("nodes")
