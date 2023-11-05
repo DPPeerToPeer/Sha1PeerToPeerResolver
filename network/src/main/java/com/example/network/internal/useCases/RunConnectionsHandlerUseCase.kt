@@ -1,4 +1,4 @@
-package com.example.network.useCases
+package com.example.network.internal.useCases
 
 import com.example.network.IRunConnectionsHandlerUseCase
 import com.example.network.internal.IConnectionsHandler

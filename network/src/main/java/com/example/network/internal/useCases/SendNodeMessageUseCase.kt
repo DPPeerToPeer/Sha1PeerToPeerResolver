@@ -1,4 +1,4 @@
-package com.example.network.useCases
+package com.example.network.internal.useCases
 
 import com.example.common.models.SocketId
 import com.example.network.ISendNodeMessageUseCase
