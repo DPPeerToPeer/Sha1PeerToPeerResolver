@@ -1,7 +1,7 @@
 package com.example.network.internal
 
 import com.example.common.models.SocketId
-import com.example.network.NodeMessage
+import com.example.network.models.NodeMessage
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.channels.Channel

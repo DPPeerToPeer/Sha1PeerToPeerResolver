@@ -1,7 +1,7 @@
 package com.example.network.di
 
-import com.example.network.IConnectionsHandler
 import com.example.network.internal.ConnectionsHandler
+import com.example.network.internal.IConnectionsHandler
 import com.example.network.useCases.ListenNodeMessagesUseCase
 import com.example.network.useCases.SendNodeMessageUseCase
 import kotlinx.coroutines.CoroutineScope

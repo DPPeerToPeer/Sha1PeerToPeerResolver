@@ -1,4 +1,4 @@
-package com.example.network
+package com.example.network.models
 
 import com.example.common.models.Batch
 import com.example.common.models.CalculationResult

@@ -1,19 +1,19 @@
 package org.example.sha1PeerToPeer.domain.useCases
 
-import com.example.network.IConnectionsHandler
-import com.example.network.NodeMessage
+import com.example.network.IListenNodeMessagesUseCase
+import com.example.network.models.NodeMessage
 import org.example.sha1PeerToPeer.data.repository.calculation.ICalculationRepository
 import org.example.sha1PeerToPeer.data.repository.nodes.INodesRepository
 import org.example.sha1PeerToPeer.domain.models.Node
 
 class HandleIncomingNodeMessagesUseCase(
-    private val connectionsHandler: IConnectionsHandler,
+    private val listenNodeMessagesUseCase: IListenNodeMessagesUseCase,
     private val calculationRepository: ICalculationRepository,
     private val nodesRepository: INodesRepository,
 ) {
 
     suspend operator fun invoke() {
-        connectionsHandler.listenNodesMessages()
+        listenNodeMessagesUseCase()
             .collect { (socketId, message) ->
                 when (message) {
                     is NodeMessage.Discovery -> {

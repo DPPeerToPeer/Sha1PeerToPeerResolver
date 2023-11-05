@@ -1,9 +1,8 @@
 package com.example.network.internal
 
 import com.example.common.models.SocketId
-import com.example.network.IConnectionsHandler
-import com.example.network.IpAndPort
-import com.example.network.NodeMessage
+import com.example.network.models.IpAndPort
+import com.example.network.models.NodeMessage
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.util.network.*

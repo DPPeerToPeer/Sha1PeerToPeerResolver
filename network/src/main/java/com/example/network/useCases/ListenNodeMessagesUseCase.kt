@@ -1,14 +1,15 @@
 package com.example.network.useCases
 
 import com.example.common.models.SocketId
-import com.example.network.IConnectionsHandler
-import com.example.network.NodeMessage
+import com.example.network.IListenNodeMessagesUseCase
+import com.example.network.internal.IConnectionsHandler
+import com.example.network.models.NodeMessage
 import kotlinx.coroutines.flow.Flow
 
-class ListenNodeMessagesUseCase(
+internal class ListenNodeMessagesUseCase(
     private val connectionsHandler: IConnectionsHandler,
-) {
+) : IListenNodeMessagesUseCase {
 
-    operator fun invoke(): Flow<Pair<SocketId, NodeMessage>> = connectionsHandler
+    override operator fun invoke(): Flow<Pair<SocketId, NodeMessage>> = connectionsHandler
         .listenNodesMessages()
 }

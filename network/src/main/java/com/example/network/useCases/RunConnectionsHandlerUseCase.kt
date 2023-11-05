@@ -1,12 +1,13 @@
 package com.example.network.useCases
 
-import com.example.network.IConnectionsHandler
-import com.example.network.IpAndPort
+import com.example.network.IRunConnectionsHandlerUseCase
+import com.example.network.internal.IConnectionsHandler
+import com.example.network.models.IpAndPort
 
-class RunConnectionsHandlerUseCase(
+internal class RunConnectionsHandlerUseCase(
     private val connectionsHandler: IConnectionsHandler,
-) {
+) : IRunConnectionsHandlerUseCase {
 
-    operator fun invoke(): IpAndPort = connectionsHandler
+    override operator fun invoke(): IpAndPort = connectionsHandler
         .runAndReturnLocalIpAndPort()
 }

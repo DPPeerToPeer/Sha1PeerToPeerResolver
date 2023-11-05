@@ -1,14 +1,15 @@
 package com.example.network.useCases
 
 import com.example.common.models.SocketId
-import com.example.network.IConnectionsHandler
-import com.example.network.NodeMessage
+import com.example.network.ISendNodeMessageUseCase
+import com.example.network.internal.IConnectionsHandler
+import com.example.network.models.NodeMessage
 
-class SendNodeMessageUseCase(
+internal class SendNodeMessageUseCase(
     private val connectionsHandler: IConnectionsHandler,
-) {
+) : ISendNodeMessageUseCase {
 
-    suspend operator fun invoke(message: Pair<SocketId, NodeMessage>) {
+    override suspend operator fun invoke(message: Pair<SocketId, NodeMessage>) {
         connectionsHandler.sendNodeMessage(message = message)
     }
 }

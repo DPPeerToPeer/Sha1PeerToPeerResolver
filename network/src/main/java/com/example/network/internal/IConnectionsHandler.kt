@@ -1,9 +1,11 @@
-package com.example.network
+package com.example.network.internal
 
 import com.example.common.models.SocketId
+import com.example.network.models.IpAndPort
+import com.example.network.models.NodeMessage
 import kotlinx.coroutines.flow.Flow
 
-interface IConnectionsHandler {
+internal interface IConnectionsHandler {
 
     fun runAndReturnLocalIpAndPort(): IpAndPort
 

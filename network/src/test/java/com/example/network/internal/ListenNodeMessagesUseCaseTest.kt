@@ -1,18 +1,17 @@
-package org.example.sha1PeerToPeer.connections
+package com.example.network.internal
 
 import app.cash.turbine.test
-import com.example.network.IConnectionsHandler
 import com.example.network.useCases.ListenNodeMessagesUseCase
+import com.example.network.utils.BaseTest
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import org.example.sha1PeerToPeer.utils.BaseTest
 import kotlin.test.Test
 
-class ListenNodeMessagesUseCaseTest : BaseTest() {
+internal class ListenNodeMessagesUseCaseTest : BaseTest() {
     @MockK
     private lateinit var connectionsHandler: IConnectionsHandler
 
