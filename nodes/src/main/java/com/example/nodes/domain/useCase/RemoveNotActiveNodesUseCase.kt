@@ -1,4 +1,4 @@
-package org.example.sha1PeerToPeer.domain.useCases
+package com.example.nodes.domain.useCase
 
 class RemoveNotActiveNodesUseCase {
     suspend operator fun invoke() {

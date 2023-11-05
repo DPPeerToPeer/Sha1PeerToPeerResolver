@@ -1,6 +1,8 @@
 package org.example.sha1PeerToPeer.domain.useCases
 
 import com.example.calculation.ICalculationRepository
+import com.example.nodes.domain.useCase.RemoveNotActiveNodesUseCase
+import com.example.nodes.domain.useCase.SendHealthUseCase
 import kotlinx.coroutines.*
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds

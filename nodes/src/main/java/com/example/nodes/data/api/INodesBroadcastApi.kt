@@ -6,7 +6,7 @@ import com.example.common.models.CalculationResult
 /**
  * Each method send message to all nodes from NodesRepository
  */
-interface INodesApi {
+interface INodesBroadcastApi {
 
     suspend fun sendMyInfo(
         port: Int,

@@ -1,4 +1,4 @@
-package org.example.sha1PeerToPeer.domain.useCases
+package com.example.common.models
 
 class GetCurrentTimeUseCase {
 

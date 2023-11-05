@@ -3,7 +3,7 @@ package com.example.nodes.data.repository
 import com.example.common.models.SocketId
 import com.example.nodes.domain.models.Node
 
-interface INodesRepository {
+interface INodesInfoRepository {
 
     suspend fun upsertManyNodes(nodes: List<Node.DiscoveredNode>)
 

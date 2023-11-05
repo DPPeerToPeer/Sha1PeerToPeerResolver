@@ -5,7 +5,7 @@ import com.example.nodes.domain.models.Node
 import com.example.nodes.domain.models.NodeState
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class NodesRepository : INodesRepository {
+internal class NodesInfoRepository : INodesInfoRepository {
 
     private val nodes: MutableStateFlow<Map<Node, NodeState>> = MutableStateFlow(emptyMap())
 

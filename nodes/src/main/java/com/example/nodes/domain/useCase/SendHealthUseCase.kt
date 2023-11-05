@@ -1,9 +1,10 @@
-package org.example.sha1PeerToPeer.domain.useCases
+package com.example.nodes.domain.useCase
 
-import com.example.nodes.data.api.INodesApi
+import com.example.common.models.GetCurrentTimeUseCase
+import com.example.nodes.data.api.INodesBroadcastApi
 
 class SendHealthUseCase(
-    private val nodesApi: INodesApi,
+    private val nodesApi: INodesBroadcastApi,
     private val getCurrentTimeUseCase: GetCurrentTimeUseCase,
 ) {
 

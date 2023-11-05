@@ -3,13 +3,13 @@ package org.example.sha1PeerToPeer.domain.useCases
 import com.example.calculation.ICalculationRepository
 import com.example.network.IListenNodeMessagesUseCase
 import com.example.network.models.NodeMessage
-import com.example.nodes.data.repository.INodesRepository
+import com.example.nodes.data.repository.INodesInfoRepository
 import com.example.nodes.domain.models.Node
 
 class HandleIncomingNodeMessagesUseCase(
     private val listenNodeMessagesUseCase: IListenNodeMessagesUseCase,
     private val calculationRepository: ICalculationRepository,
-    private val nodesRepository: INodesRepository,
+    private val nodesRepository: INodesInfoRepository,
 ) {
 
     suspend operator fun invoke() {
