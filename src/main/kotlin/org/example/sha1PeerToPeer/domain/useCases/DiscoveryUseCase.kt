@@ -1,6 +1,6 @@
 package org.example.sha1PeerToPeer.domain.useCases
 
-import com.example.network.IConnectionsHandler
+import com.example.network.useCases.RunConnectionsHandlerUseCase
 import org.example.sha1PeerToPeer.data.api.discovery.IDiscoveryApi
 import org.example.sha1PeerToPeer.data.api.nodes.INodesApi
 import org.example.sha1PeerToPeer.data.repository.nodes.INodesRepository
@@ -8,13 +8,13 @@ import org.example.sha1PeerToPeer.data.repository.nodes.INodesRepository
 class DiscoveryUseCase(
     private val discoveryApi: IDiscoveryApi,
     private val nodesApi: INodesApi,
-    private val connectionsHandler: IConnectionsHandler,
+    private val runConnectionsHandlerUseCase: RunConnectionsHandlerUseCase,
     private val nodesRepository: INodesRepository,
 ) {
     suspend operator fun invoke(
         hashToFind: String,
     ) {
-        val myAddress = connectionsHandler.runAndReturnLocalIpAndPort()
+        val myAddress = runConnectionsHandlerUseCase.invoke()
         val currentNodes = discoveryApi.joinToSession(
             hashToFind = hashToFind,
             myPort = myAddress.port,

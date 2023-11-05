@@ -18,6 +18,7 @@ repositories {
 dependencies {
     implementation(project("common"))
     implementation(project("network"))
+    implementation(project(":calculation"))
 
     implementation(compose.desktop.currentOs)
     implementation("org.kodein.di:kodein-di:7.19.0")
