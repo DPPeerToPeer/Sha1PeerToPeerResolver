@@ -1,11 +1,11 @@
 package org.example.sha1PeerToPeer.connections
 
 import kotlinx.coroutines.flow.Flow
-import org.example.sha1PeerToPeer.domain.models.Node
+import org.example.sha1PeerToPeer.domain.models.SocketId
 
 interface IConnectionsHandler {
 
-    suspend fun sendNodeMessage(message: Pair<Node, NodeMessage>)
+    suspend fun sendNodeMessage(message: Pair<SocketId, NodeMessage>)
 
-    fun listenNodesMessages(): Flow<Pair<Node, NodeMessage>>
+    fun listenNodesMessages(): Flow<Pair<SocketId, NodeMessage>>
 }
