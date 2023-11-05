@@ -1,4 +1,4 @@
-package org.example.sha1PeerToPeer.domain.models
+package com.example.common.models
 
 import kotlinx.serialization.Serializable
 

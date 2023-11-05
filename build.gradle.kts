@@ -16,6 +16,8 @@ repositories {
 }
 
 dependencies {
+    implementation(project("common"))
+
     implementation(compose.desktop.currentOs)
     implementation("org.kodein.di:kodein-di:7.19.0")
     implementation("io.ktor:ktor-network:2.3.5")

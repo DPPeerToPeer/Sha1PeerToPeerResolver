@@ -1,7 +1,7 @@
 package org.example.sha1PeerToPeer.connections
 
+import com.example.common.models.Batch
 import kotlinx.serialization.Serializable
-import org.example.sha1PeerToPeer.domain.models.Batch
 import org.example.sha1PeerToPeer.domain.models.CalculationResult
 
 @Serializable

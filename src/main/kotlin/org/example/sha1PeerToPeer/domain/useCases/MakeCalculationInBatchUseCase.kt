@@ -1,6 +1,6 @@
 package org.example.sha1PeerToPeer.domain.useCases
 
-import org.example.sha1PeerToPeer.domain.models.Batch
+import com.example.common.models.Batch
 import org.example.sha1PeerToPeer.domain.models.CalculationResult
 
 class MakeCalculationInBatchUseCase {

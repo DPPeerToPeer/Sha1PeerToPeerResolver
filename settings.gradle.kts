@@ -11,3 +11,5 @@ pluginManagement {
 }
 
 rootProject.name = "Sha1PeerToPeerResolver"
+
+include("common")
