@@ -8,10 +8,7 @@ import com.example.common.models.CalculationResult
  */
 interface INodesBroadcastRepository {
 
-    suspend fun sendMyInfo(
-        port: Int,
-        ip: String,
-    )
+    suspend fun sendMyInfo(port: Int)
 
     suspend fun sendStart()
 

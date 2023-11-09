@@ -1,15 +1,15 @@
 package com.example.network.internal.data.nodes
 
-import com.example.common.models.SocketId
-import com.example.network.models.IpAndPort
+import com.example.common.models.NodeId
 import com.example.network.models.NodeMessage
+import com.example.network.models.Port
 import kotlinx.coroutines.flow.Flow
 
 internal interface IConnectionsHandler {
 
-    fun runAndReturnLocalIpAndPort(): IpAndPort
+    fun runAndReturnPort(): Port
 
-    suspend fun sendNodeMessage(message: Pair<SocketId, NodeMessage>)
+    suspend fun sendNodeMessage(message: Pair<NodeId, NodeMessage>)
 
-    fun listenNodesMessages(): Flow<Pair<SocketId, NodeMessage>>
+    fun listenNodesMessages(): Flow<Pair<NodeId, NodeMessage>>
 }

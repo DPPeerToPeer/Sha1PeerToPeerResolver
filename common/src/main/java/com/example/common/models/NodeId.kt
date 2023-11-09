@@ -1,4 +1,4 @@
 package com.example.common.models
 
 @JvmInline
-value class SocketId(val id: String)
+value class NodeId(val id: String)

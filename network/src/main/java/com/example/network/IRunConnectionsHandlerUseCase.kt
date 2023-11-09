@@ -1,7 +1,7 @@
 package com.example.network
 
-import com.example.network.models.IpAndPort
+import com.example.network.models.Port
 
 interface IRunConnectionsHandlerUseCase {
-    operator fun invoke(): IpAndPort
+    operator fun invoke(): Port
 }

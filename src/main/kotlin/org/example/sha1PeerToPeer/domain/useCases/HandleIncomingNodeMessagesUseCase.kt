@@ -14,12 +14,12 @@ class HandleIncomingNodeMessagesUseCase(
 
     suspend operator fun invoke() {
         listenNodeMessagesUseCase()
-            .collect { (socketId, message) ->
+            .collect { (nodeId, message) ->
                 when (message) {
                     is NodeMessage.Discovery -> {
                         nodesRepository.upsertNode(
-                            node = Node.DiscoveredNode(
-                                socketId = socketId,
+                            node = Node(
+                                id = nodeId,
                                 name = message.name,
                                 ip = message.ip,
                                 port = message.port,
@@ -29,7 +29,7 @@ class HandleIncomingNodeMessagesUseCase(
                     is NodeMessage.StartedCalculation -> {
                         calculationRepository.markBatchInProgressIfWasFirst(
                             batch = message.batch,
-                            nodeId = socketId,
+                            nodeId = nodeId,
                             timestamp = message.timestamp,
                         )
                     }
@@ -38,7 +38,7 @@ class HandleIncomingNodeMessagesUseCase(
                     }
                     is NodeMessage.Health -> {
                         nodesRepository.updateHealth(
-                            socketId = socketId,
+                            nodeId = nodeId,
                             timestamp = message.timestamp,
                         )
                     }

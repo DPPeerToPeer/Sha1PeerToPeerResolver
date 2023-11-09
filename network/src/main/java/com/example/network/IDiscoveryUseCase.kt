@@ -6,5 +6,5 @@ interface IDiscoveryUseCase {
     suspend operator fun invoke(
         myPort: Int,
         hashToFind: String,
-    ): List<Node.DiscoveredNode>
+    ): List<Node>
 }

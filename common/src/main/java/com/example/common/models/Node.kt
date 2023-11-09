@@ -1,15 +1,8 @@
 package com.example.common.models
 
-sealed interface Node {
-
-    val socketId: SocketId
-
-    data class UnknownNode(override val socketId: SocketId) : Node
-
-    data class DiscoveredNode(
-        override val socketId: SocketId,
-        val name: String,
-        val ip: String,
-        val port: Int,
-    ) : Node
-}
+data class Node(
+    val id: NodeId,
+    val ip: String,
+    val port: Int,
+    val name: String,
+)
