@@ -39,10 +39,10 @@ internal class ConnectionsHandler(
         }
     }
 
-    override suspend fun sendNodeMessage(message: Pair<NodeId, NodeMessage>) {
+    override suspend fun sendNodeMessage(nodeId: NodeId, message: NodeMessage) {
         sockets.value.firstOrNull {
-            message.first == it.nodeId
-        }?.writeMessage(message = message.second)
+            nodeId == it.nodeId
+        }?.writeMessage(message = message)
     }
 
     override fun listenNodesMessages(): Flow<Pair<NodeId, NodeMessage>> = messageChannel
