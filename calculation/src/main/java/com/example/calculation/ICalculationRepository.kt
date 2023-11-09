@@ -2,7 +2,7 @@ package com.example.calculation
 
 import com.example.calculation.domain.models.BatchState
 import com.example.common.models.Batch
-import com.example.common.models.SocketId
+import com.example.common.models.NodeId
 import kotlinx.coroutines.flow.StateFlow
 
 interface ICalculationRepository {
@@ -30,7 +30,7 @@ interface ICalculationRepository {
      */
     suspend fun markBatchInProgressIfWasFirst(
         batch: Batch,
-        nodeId: SocketId,
+        nodeId: NodeId,
         timestamp: Long,
     )
 

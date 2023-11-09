@@ -10,7 +10,7 @@ internal class DiscoveryUseCase(
     override suspend operator fun invoke(
         myPort: Int,
         hashToFind: String,
-    ): List<Node.DiscoveredNode> = discoveryApi.joinToSession(
+    ): List<Node> = discoveryApi.joinToSession(
         hashToFind = hashToFind,
         myPort = myPort,
     )

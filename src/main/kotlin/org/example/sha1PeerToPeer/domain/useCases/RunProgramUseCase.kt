@@ -34,7 +34,6 @@ class RunProgramUseCase(
 
         nodesBroadcastRepository.sendMyInfo(
             port = myAddress.port,
-            ip = myAddress.ip,
         )
 
         launch {

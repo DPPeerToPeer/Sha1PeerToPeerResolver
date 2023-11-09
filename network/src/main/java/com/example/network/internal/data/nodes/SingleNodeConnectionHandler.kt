@@ -1,6 +1,6 @@
 package com.example.network.internal.data.nodes
 
-import com.example.common.models.SocketId
+import com.example.common.models.NodeId
 import com.example.network.models.NodeMessage
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
@@ -11,8 +11,8 @@ import kotlin.coroutines.coroutineContext
 
 internal class SingleNodeConnectionHandler(
     private val socket: Socket,
-    val socketId: SocketId,
-    private val messageChannel: Channel<Pair<SocketId, NodeMessage>>,
+    val nodeId: NodeId,
+    private val messageChannel: Channel<Pair<NodeId, NodeMessage>>,
 ) {
     private val readChannel = socket.openReadChannel()
     private val writeChannel = socket.openWriteChannel()
@@ -23,7 +23,7 @@ internal class SingleNodeConnectionHandler(
             val incomingLine = readChannel.readUTF8Line()
             incomingLine?.let {
                 val message = Json.decodeFromString<NodeMessage>(incomingLine)
-                messageChannel.send(socketId to message)
+                messageChannel.send(nodeId to message)
             }
         }
     }

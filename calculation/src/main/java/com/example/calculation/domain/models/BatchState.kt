@@ -1,13 +1,13 @@
 package com.example.calculation.domain.models
 
-import com.example.common.models.SocketId
+import com.example.common.models.NodeId
 
 sealed interface BatchState {
 
     object Available : BatchState
 
     data class InProgressOtherNode(
-        val nodeId: SocketId,
+        val nodeId: NodeId,
         val startTimestamp: Long,
     ) : BatchState
 
