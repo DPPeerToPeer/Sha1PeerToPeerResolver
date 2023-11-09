@@ -6,22 +6,18 @@ import com.example.network.models.Port
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.util.network.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import java.util.*
 
 internal class ConnectionsHandler(
     private val scope: CoroutineScope,
 ) : IConnectionsHandler {
 
-    private val sockets: MutableStateFlow<List<SingleNodeConnectionHandler>> = MutableStateFlow(emptyList())
+    private val sockets: MutableStateFlow<Map<NodeId, SingleNodeConnectionHandler>> = MutableStateFlow(emptyMap())
     private val messageChannel: Channel<Pair<NodeId, NodeMessage>> = Channel(Channel.BUFFERED)
 
     override fun runAndReturnPort(): Port {
@@ -31,7 +27,9 @@ internal class ConnectionsHandler(
         scope.launch {
             while (coroutineContext.isActive) {
                 val socket: Socket = serverSocket.accept()
-                onNewSocket(socket)
+                launch {
+                    runHandlingNewSocket(socket)
+                }
             }
         }
         return serverSocket.localAddress.toJavaAddress().let {
@@ -40,25 +38,22 @@ internal class ConnectionsHandler(
     }
 
     override suspend fun sendNodeMessage(nodeId: NodeId, message: NodeMessage) {
-        sockets.value.firstOrNull {
-            nodeId == it.nodeId
-        }?.writeMessage(message = message)
+        sockets.value[nodeId]?.writeMessage(message = message)
     }
 
     override fun listenNodesMessages(): Flow<Pair<NodeId, NodeMessage>> = messageChannel
         .receiveAsFlow()
 
-    private fun onNewSocket(socket: Socket) {
+    private suspend fun runHandlingNewSocket(socket: Socket) {
         val singleConnectionsHandler = SingleNodeConnectionHandler(
             socket = socket,
             messageChannel = messageChannel,
-            nodeId = NodeId(id = UUID.randomUUID().toString()),
         )
-        sockets.update {
-            it + singleConnectionsHandler
+        val nodeId = singleConnectionsHandler.listenNodeId()
+        sockets.update { previousMap ->
+            previousMap + (nodeId to singleConnectionsHandler)
         }
-        scope.launch {
-            singleConnectionsHandler.listenIncomingMessages()
-        }
+
+        singleConnectionsHandler.listenIncomingMessages()
     }
 }

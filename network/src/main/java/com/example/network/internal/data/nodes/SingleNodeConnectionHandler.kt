@@ -11,11 +11,15 @@ import kotlin.coroutines.coroutineContext
 
 internal class SingleNodeConnectionHandler(
     private val socket: Socket,
-    val nodeId: NodeId,
     private val messageChannel: Channel<Pair<NodeId, NodeMessage>>,
 ) {
     private val readChannel = socket.openReadChannel()
     private val writeChannel = socket.openWriteChannel()
+    private var nodeId: NodeId? = null
+
+    suspend fun listenNodeId(): NodeId {
+        return NodeId(id = readChannel.readUTF8Line()!!).also { this.nodeId = it }
+    }
 
     suspend fun listenIncomingMessages() {
         while (coroutineContext.isActive) {
@@ -23,7 +27,7 @@ internal class SingleNodeConnectionHandler(
             val incomingLine = readChannel.readUTF8Line()
             incomingLine?.let {
                 val message = Json.decodeFromString<NodeMessage>(incomingLine)
-                messageChannel.send(nodeId to message)
+                messageChannel.send(nodeId!! to message)
             }
         }
     }
