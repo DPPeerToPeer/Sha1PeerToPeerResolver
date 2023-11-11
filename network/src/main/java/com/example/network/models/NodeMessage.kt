@@ -12,6 +12,7 @@ sealed interface NodeMessage {
         val ip: String,
         val port: Int,
         val name: String,
+        val id: String,
     ) : NodeMessage
 
     @Serializable

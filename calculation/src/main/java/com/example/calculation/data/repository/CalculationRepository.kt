@@ -3,7 +3,7 @@ package com.example.calculation.data.repository
 import com.example.calculation.ICalculationRepository
 import com.example.calculation.domain.models.BatchState
 import com.example.common.models.Batch
-import com.example.common.models.SocketId
+import com.example.common.models.NodeId
 import com.example.nodes.data.repository.broadcast.INodesBroadcastRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,7 +33,7 @@ internal class CalculationRepository(
         TODO("Not yet implemented")
     }
 
-    override suspend fun markBatchInProgressIfWasFirst(batch: Batch, nodeId: SocketId, timestamp: Long) {
+    override suspend fun markBatchInProgressIfWasFirst(batch: Batch, nodeId: NodeId, timestamp: Long) {
         TODO("Not yet implemented")
     }
 
