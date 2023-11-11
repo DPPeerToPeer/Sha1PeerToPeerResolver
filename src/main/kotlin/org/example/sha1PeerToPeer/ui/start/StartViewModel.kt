@@ -3,26 +3,37 @@ package org.example.sha1PeerToPeer.ui.start
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.example.sha1PeerToPeer.domain.models.ProgramState
+import kotlin.time.Duration.Companion.seconds
 
 class StartViewModel(
     // private val runProgramUseCase: RunProgramUseCase,
-) : StateScreenModel<ScreenState>(
-    initialState = ScreenState(
-        programState = ProgramState.NOT_STARTED,
+) : StateScreenModel<StartScreenState>(
+    initialState = StartScreenState(
         hashToFind = "",
+        isLoading = false,
+        shouldNavigateToNextScreen = false,
     ),
 ) {
 
+    fun onHashChange(newHash: String) {
+        mutableState.update { currentState -> // /////mutableState przechowuje aktualny stan ekranu,,, UPDATE-pozwala zmodyfikowac aktualny stan
+            // // tutaj it nazwalismy currentState
+            currentState.copy(hashToFind = newHash)
+        }
+    }
+
     fun onStartClick() {
         screenModelScope.launch(Dispatchers.IO) {
-/*            runProgramUseCase.runAndObserveProgramState(hashToFind = state.value.hashToFind)
-                .collect { newProgramState ->
-                    mutableState.update {
-                        it.copy(programState = newProgramState)
-                    }
-                }*/
+            mutableState.update { currentstate ->
+                currentstate.copy(isLoading = true)
+            }
+            delay(3.seconds)
+            mutableState.update { currnetState ->
+                currnetState.copy(shouldNavigateToNextScreen = true)
+            }
         }
     }
 }
