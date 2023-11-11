@@ -9,7 +9,7 @@ internal interface IConnectionsHandler {
 
     fun runAndReturnPort(): Port
 
-    suspend fun sendNodeMessage(message: Pair<NodeId, NodeMessage>)
+    suspend fun sendNodeMessage(nodeId: NodeId, message: NodeMessage)
 
     fun listenNodesMessages(): Flow<Pair<NodeId, NodeMessage>>
 }

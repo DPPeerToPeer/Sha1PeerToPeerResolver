@@ -9,7 +9,10 @@ internal class SendNodeMessageUseCase(
     private val connectionsHandler: IConnectionsHandler,
 ) : ISendNodeMessageUseCase {
 
-    override suspend operator fun invoke(message: Pair<NodeId, NodeMessage>) {
-        connectionsHandler.sendNodeMessage(message = message)
+    override suspend operator fun invoke(nodeId: NodeId, message: NodeMessage) {
+        connectionsHandler.sendNodeMessage(
+            nodeId = nodeId,
+            message = message,
+        )
     }
 }
