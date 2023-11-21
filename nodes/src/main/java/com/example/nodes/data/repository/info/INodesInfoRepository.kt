@@ -5,15 +5,15 @@ import com.example.common.models.NodeId
 
 interface INodesInfoRepository {
 
-    suspend fun upsertManyNodes(nodes: List<Node>)
+    suspend fun upsertManyNodes(nodes: List<Node>)//TODO
 
-    suspend fun getActiveNodes(): List<Node>
+    suspend fun getActiveNodes(): List<Node>//TODO
 
-    suspend fun upsertNode(node: Node)
+    suspend fun upsertNode(node: Node)//TODO
 
-    suspend fun removeNode(id: NodeId)
+    suspend fun removeNode(id: NodeId)//TODO
 
-    suspend fun updateHealth(
+    suspend fun updateHealth(//TODO
         nodeId: NodeId,
         timestamp: Long,
     )
