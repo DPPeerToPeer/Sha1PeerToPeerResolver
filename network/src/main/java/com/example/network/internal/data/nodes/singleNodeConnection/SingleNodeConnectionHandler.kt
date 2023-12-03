@@ -1,16 +1,16 @@
 package com.example.network.internal.data.nodes.singleNodeConnection
 
 import com.example.common.models.NodeId
+import com.example.network.internal.data.nodes.messagesProxy.IMessagesProxy
 import com.example.network.models.NodeMessage
 import com.example.socketsFacade.IReadWriteSocket
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.isActive
 import kotlinx.serialization.json.Json
 import kotlin.coroutines.coroutineContext
 
 internal class SingleNodeConnectionHandler(
     private val socket: IReadWriteSocket,
-    private val messageChannel: Channel<Pair<NodeId, NodeMessage>>,
+    private val messagesProxy: IMessagesProxy,
 ) : ISingleNodeConnectionHandler {
 
     private var nodeId: NodeId? = null
@@ -24,7 +24,10 @@ internal class SingleNodeConnectionHandler(
             val incomingLine = socket.readLine()
             incomingLine?.let {
                 val message = Json.decodeFromString<NodeMessage>(incomingLine)
-                messageChannel.send(nodeId!! to message)
+                messagesProxy.onNewMessage(
+                    nodeId = nodeId!!,
+                    message = message,
+                )
             }
         }
     }

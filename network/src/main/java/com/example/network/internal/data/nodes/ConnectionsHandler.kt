@@ -1,6 +1,7 @@
 package com.example.network.internal.data.nodes
 
 import com.example.common.models.NodeId
+import com.example.network.internal.data.nodes.messagesProxy.IMessagesProxy
 import com.example.network.internal.data.nodes.singleNodeConnection.ISingleNodeConnectionFactory
 import com.example.network.internal.data.nodes.singleNodeConnection.ISingleNodeConnectionHandler
 import com.example.network.models.NodeMessage
@@ -8,10 +9,8 @@ import com.example.network.models.Port
 import com.example.socketsFacade.IReadWriteSocket
 import com.example.socketsFacade.IServerSocketFactory
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -21,10 +20,10 @@ internal class ConnectionsHandler(
     private val scope: CoroutineScope,
     private val serverSocketFactory: IServerSocketFactory,
     private val singleNodeConnectionFactory: ISingleNodeConnectionFactory,
+    private val messagesProxy: IMessagesProxy,
 ) : IConnectionsHandler {
 
     private val sockets: MutableStateFlow<Map<NodeId, ISingleNodeConnectionHandler>> = MutableStateFlow(emptyMap())
-    private val messageChannel: Channel<Pair<NodeId, NodeMessage>> = Channel(Channel.BUFFERED)
 
     override fun runAndReturnPort(): Port {
         val serverSocket = serverSocketFactory.create()
@@ -46,13 +45,12 @@ internal class ConnectionsHandler(
         sockets.value[nodeId]?.writeMessage(message = message)
     }
 
-    override fun listenNodesMessages(): Flow<Pair<NodeId, NodeMessage>> = messageChannel
-        .receiveAsFlow()
+    override fun listenNodesMessages(): Flow<Pair<NodeId, NodeMessage>> = messagesProxy
+        .listenMessages()
 
     private suspend fun runHandlingNewSocket(socket: IReadWriteSocket) {
         val singleConnectionsHandler = singleNodeConnectionFactory.create(
             socket = socket,
-            messageChannel = messageChannel,
         )
         val nodeId = singleConnectionsHandler.listenNodeId()
         sockets.update { previousMap ->

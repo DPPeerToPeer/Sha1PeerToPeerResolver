@@ -6,6 +6,8 @@ import com.example.network.IRunConnectionsHandlerUseCase
 import com.example.network.ISendNodeMessageUseCase
 import com.example.network.internal.data.nodes.ConnectionsHandler
 import com.example.network.internal.data.nodes.IConnectionsHandler
+import com.example.network.internal.data.nodes.messagesProxy.IMessagesProxy
+import com.example.network.internal.data.nodes.messagesProxy.MessagesProxy
 import com.example.network.internal.data.nodes.singleNodeConnection.ISingleNodeConnectionFactory
 import com.example.network.internal.data.nodes.singleNodeConnection.SingleNodeConnectionFactory
 import com.example.network.internal.useCase.DiscoveryUseCase
@@ -27,10 +29,11 @@ val networkModule = DI.Module(name = "Network") {
             scope = CoroutineScope(SupervisorJob()),
             serverSocketFactory = instance(),
             singleNodeConnectionFactory = instance(),
+            messagesProxy = instance(),
         )
     }
     bindProvider<ISingleNodeConnectionFactory> {
-        SingleNodeConnectionFactory()
+        SingleNodeConnectionFactory(messagesProxy = instance())
     }
     bindProvider<IListenNodeMessagesUseCase> {
         ListenNodeMessagesUseCase(instance())
@@ -43,5 +46,8 @@ val networkModule = DI.Module(name = "Network") {
     }
     bindProvider<IDiscoveryUseCase> {
         DiscoveryUseCase(instance())
+    }
+    bindSingleton<IMessagesProxy> {
+        MessagesProxy()
     }
 }

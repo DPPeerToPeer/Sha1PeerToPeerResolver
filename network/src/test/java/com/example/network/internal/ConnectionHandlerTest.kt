@@ -2,6 +2,7 @@ package com.example.network.internal
 
 import com.example.common.models.NodeId
 import com.example.network.internal.data.nodes.ConnectionsHandler
+import com.example.network.internal.data.nodes.messagesProxy.IMessagesProxy
 import com.example.network.internal.data.nodes.singleNodeConnection.ISingleNodeConnectionFactory
 import com.example.network.internal.data.nodes.singleNodeConnection.ISingleNodeConnectionHandler
 import com.example.network.models.Port
@@ -32,6 +33,9 @@ internal class ConnectionHandlerTest : BaseTest() {
 
     @MockK
     private lateinit var singleNodeConnectionFactory: ISingleNodeConnectionFactory
+
+    @MockK
+    private lateinit var messagesProxy: IMessagesProxy
 
     @InjectMockKs
     private lateinit var connectionsHandler: ConnectionsHandler
@@ -69,7 +73,6 @@ internal class ConnectionHandlerTest : BaseTest() {
         coEvery {
             singleNodeConnectionFactory.create(
                 socket = readWriteSocket1,
-                messageChannel = any(),
             )
         } returns singleNodeConnectionHandler1
 
