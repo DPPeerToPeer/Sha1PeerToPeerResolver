@@ -16,7 +16,7 @@ import org.example.sha1PeerToPeer.domain.useCases.HandleIncomingNodeMessagesUseC
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
-class RunProgramUseCase(
+internal class RunProgramUseCase(
     private val runConnectionsHandlerUseCase: IRunConnectionsHandlerUseCase,
     private val discoveryUseCase: IDiscoveryUseCase,
     private val calculationRepository: ICalculationRepository,
