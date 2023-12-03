@@ -1,4 +1,4 @@
-package org.example.sha1PeerToPeer.domain.useCases
+package org.example.sha1PeerToPeer.domain.useCases.runProgram
 
 import com.example.calculation.ICalculationRepository
 import com.example.network.IDiscoveryUseCase
@@ -12,10 +12,11 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.example.sha1PeerToPeer.domain.models.ProgramState
+import org.example.sha1PeerToPeer.domain.useCases.HandleIncomingNodeMessagesUseCase
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
-class RunProgramUseCase(
+internal class RunProgramUseCase(
     private val runConnectionsHandlerUseCase: IRunConnectionsHandlerUseCase,
     private val discoveryUseCase: IDiscoveryUseCase,
     private val calculationRepository: ICalculationRepository,
@@ -25,41 +26,37 @@ class RunProgramUseCase(
     private val nodesRepository: INodesInfoRepository,
     private val nodesBroadcastRepository: INodesBroadcastRepository,
     private val appScope: CoroutineScope,
-) {
+) : IRunProgramUseCase {
 
     private var job: Job? = null
     private val mutex: Mutex = Mutex()
 
     private val programStateFlow: MutableStateFlow<ProgramState> = MutableStateFlow(ProgramState.NOT_STARTED)
 
-    fun runAndObserveProgramState(hashToFind: String): Flow<ProgramState> = flow {
+    override suspend fun invoke(hashToFind: String) {
         mutex.withLock {
             if (job == null) {
+                programStateFlow.value = ProgramState.INITIALIZING
+                val myPort = runConnectionsHandlerUseCase.invoke()
+                val currentNodes = discoveryUseCase.invoke(
+                    hashToFind = hashToFind,
+                    myPort = myPort.port,
+                )
+                nodesRepository.upsertManyNodes(nodes = currentNodes)
+
+                nodesBroadcastRepository.sendMyInfo(
+                    port = myPort.port,
+                )
+
                 job = appScope.launch {
-                    start(hashToFind = hashToFind)
+                    makeRepetitiveOperations()
                 }
             }
         }
-
-        emitAll(programStateFlow)
     }
 
-    private suspend fun start(
-        hashToFind: String,
-    ) {
+    private suspend fun makeRepetitiveOperations() {
         coroutineScope {
-            programStateFlow.value = ProgramState.INITIALIZING
-            val myAddress = runConnectionsHandlerUseCase.invoke()
-            val currentNodes = discoveryUseCase.invoke(
-                hashToFind = hashToFind,
-                myPort = myAddress.port,
-            )
-            nodesRepository.upsertManyNodes(nodes = currentNodes)
-
-            nodesBroadcastRepository.sendMyInfo(
-                port = myAddress.port,
-            )
-
             programStateFlow.value = ProgramState.RUNNING
 
             launch {
@@ -70,6 +67,7 @@ class RunProgramUseCase(
                     val batch = calculationRepository.getAvailableBatchAndMarkMine()
                     batch?.let {
                         val job = launch {
+                            nodesBroadcastRepository.sendStartedCalculation(batch = batch, timestamp = System.currentTimeMillis())
                             calculationRepository.startCalculation(batch = batch)
                         }
                         while (!job.isCompleted) {
