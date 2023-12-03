@@ -10,6 +10,5 @@ repositories {
 
 dependencies {
     implementation(project(":common"))
-    implementation(project(":nodes"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 }
