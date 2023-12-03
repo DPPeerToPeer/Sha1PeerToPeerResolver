@@ -2,29 +2,26 @@ package com.example.network.internal.data.nodes
 
 import com.example.common.models.NodeId
 import com.example.network.models.NodeMessage
-import io.ktor.network.sockets.*
-import io.ktor.utils.io.*
+import com.example.socketsFacade.IReadWriteSocket
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.isActive
 import kotlinx.serialization.json.Json
 import kotlin.coroutines.coroutineContext
 
 internal class SingleNodeConnectionHandler(
-    private val socket: Socket,
+    private val socket: IReadWriteSocket,
     private val messageChannel: Channel<Pair<NodeId, NodeMessage>>,
 ) {
-    private val readChannel = socket.openReadChannel()
-    private val writeChannel = socket.openWriteChannel()
+
     private var nodeId: NodeId? = null
 
     suspend fun listenNodeId(): NodeId {
-        return NodeId(id = readChannel.readUTF8Line()!!).also { this.nodeId = it }
+        return NodeId(id = socket.readLine()!!).also { this.nodeId = it }
     }
 
     suspend fun listenIncomingMessages() {
         while (coroutineContext.isActive) {
-            readChannel.awaitContent()
-            val incomingLine = readChannel.readUTF8Line()
+            val incomingLine = socket.readLine()
             incomingLine?.let {
                 val message = Json.decodeFromString<NodeMessage>(incomingLine)
                 messageChannel.send(nodeId!! to message)
@@ -34,10 +31,6 @@ internal class SingleNodeConnectionHandler(
 
     suspend fun writeMessage(message: NodeMessage) {
         val jsonMessage = Json.encodeToString(serializer = NodeMessage.serializer(), value = message)
-        writeChannel.writeStringUtf8(jsonMessage)
-    }
-
-    fun close() {
-        socket.close()
+        socket.write(text = jsonMessage)
     }
 }

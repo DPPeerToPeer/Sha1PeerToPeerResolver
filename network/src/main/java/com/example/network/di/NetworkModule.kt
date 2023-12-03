@@ -10,6 +10,7 @@ import com.example.network.internal.useCase.DiscoveryUseCase
 import com.example.network.internal.useCase.ListenNodeMessagesUseCase
 import com.example.network.internal.useCase.RunConnectionsHandlerUseCase
 import com.example.network.internal.useCase.SendNodeMessageUseCase
+import com.example.socketsFacade.di.socketsFacadeModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import org.kodein.di.DI
@@ -18,9 +19,11 @@ import org.kodein.di.bindSingleton
 import org.kodein.di.instance
 
 val networkModule = DI.Module(name = "Network") {
+    import(socketsFacadeModule)
     bindSingleton<IConnectionsHandler> {
         ConnectionsHandler(
             scope = CoroutineScope(SupervisorJob()),
+            serverSocketFactory = instance(),
         )
     }
     bindProvider<IListenNodeMessagesUseCase> {
