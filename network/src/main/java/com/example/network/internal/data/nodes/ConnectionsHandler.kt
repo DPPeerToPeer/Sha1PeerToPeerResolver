@@ -1,6 +1,8 @@
 package com.example.network.internal.data.nodes
 
 import com.example.common.models.NodeId
+import com.example.network.internal.data.nodes.singleNodeConnection.ISingleNodeConnectionFactory
+import com.example.network.internal.data.nodes.singleNodeConnection.ISingleNodeConnectionHandler
 import com.example.network.models.NodeMessage
 import com.example.network.models.Port
 import com.example.socketsFacade.IReadWriteSocket
@@ -18,9 +20,10 @@ import kotlinx.coroutines.supervisorScope
 internal class ConnectionsHandler(
     private val scope: CoroutineScope,
     private val serverSocketFactory: IServerSocketFactory,
+    private val singleNodeConnectionFactory: ISingleNodeConnectionFactory,
 ) : IConnectionsHandler {
 
-    private val sockets: MutableStateFlow<Map<NodeId, SingleNodeConnectionHandler>> = MutableStateFlow(emptyMap())
+    private val sockets: MutableStateFlow<Map<NodeId, ISingleNodeConnectionHandler>> = MutableStateFlow(emptyMap())
     private val messageChannel: Channel<Pair<NodeId, NodeMessage>> = Channel(Channel.BUFFERED)
 
     override fun runAndReturnPort(): Port {
@@ -47,7 +50,7 @@ internal class ConnectionsHandler(
         .receiveAsFlow()
 
     private suspend fun runHandlingNewSocket(socket: IReadWriteSocket) {
-        val singleConnectionsHandler = SingleNodeConnectionHandler(
+        val singleConnectionsHandler = singleNodeConnectionFactory.create(
             socket = socket,
             messageChannel = messageChannel,
         )

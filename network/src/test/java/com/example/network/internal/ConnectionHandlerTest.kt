@@ -1,6 +1,9 @@
 package com.example.network.internal
 
+import com.example.common.models.NodeId
 import com.example.network.internal.data.nodes.ConnectionsHandler
+import com.example.network.internal.data.nodes.singleNodeConnection.ISingleNodeConnectionFactory
+import com.example.network.internal.data.nodes.singleNodeConnection.ISingleNodeConnectionHandler
 import com.example.network.models.Port
 import com.example.network.utils.BaseTest
 import com.example.socketsFacade.IReadWriteSocket
@@ -15,6 +18,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -25,6 +29,9 @@ internal class ConnectionHandlerTest : BaseTest() {
 
     @MockK
     private lateinit var serverSocketFactory: IServerSocketFactory
+
+    @MockK
+    private lateinit var singleNodeConnectionFactory: ISingleNodeConnectionFactory
 
     @InjectMockKs
     private lateinit var connectionsHandler: ConnectionsHandler
@@ -44,6 +51,53 @@ internal class ConnectionHandlerTest : BaseTest() {
         coVerify(exactly = 1) {
             serverSocketFactory.create()
         }
+    }
+
+    @Test
+    fun `when accept is triggered SingleNodeConnectionHandler is created`() = runTest {
+        val acceptChannel = Channel<IReadWriteSocket>(Channel.UNLIMITED)
+        mockServerSocket(
+            port = 6,
+            acceptChannel = acceptChannel,
+        )
+
+        connectionsHandler.runAndReturnPort()
+
+        val readWriteSocket1 = mockk<IReadWriteSocket>()
+
+        val singleNodeConnectionHandler1 = mockSingleNodeConnectionHandler(nodeId = NodeId(id = "id1"))
+        coEvery {
+            singleNodeConnectionFactory.create(
+                socket = readWriteSocket1,
+                messageChannel = any(),
+            )
+        } returns singleNodeConnectionHandler1
+
+        acceptChannel.send(readWriteSocket1)
+
+        coVerify(exactly = 1) {
+            singleNodeConnectionHandler1.listenNodeId()
+        }
+        coVerify(exactly = 1) {
+            singleNodeConnectionHandler1.listenIncomingMessages()
+        }
+    }
+
+    private fun mockSingleNodeConnectionHandler(
+        nodeId: NodeId,
+    ): ISingleNodeConnectionHandler {
+        val singleNodeConnectionHandler = mockk<ISingleNodeConnectionHandler>()
+
+        coEvery {
+            singleNodeConnectionHandler.listenNodeId()
+        } returns nodeId
+        coEvery {
+            singleNodeConnectionHandler.listenIncomingMessages()
+        } coAnswers {
+            awaitCancellation()
+        }
+
+        return singleNodeConnectionHandler
     }
 
     private fun mockServerSocket(

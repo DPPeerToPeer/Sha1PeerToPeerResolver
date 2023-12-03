@@ -6,6 +6,8 @@ import com.example.network.IRunConnectionsHandlerUseCase
 import com.example.network.ISendNodeMessageUseCase
 import com.example.network.internal.data.nodes.ConnectionsHandler
 import com.example.network.internal.data.nodes.IConnectionsHandler
+import com.example.network.internal.data.nodes.singleNodeConnection.ISingleNodeConnectionFactory
+import com.example.network.internal.data.nodes.singleNodeConnection.SingleNodeConnectionFactory
 import com.example.network.internal.useCase.DiscoveryUseCase
 import com.example.network.internal.useCase.ListenNodeMessagesUseCase
 import com.example.network.internal.useCase.RunConnectionsHandlerUseCase
@@ -24,7 +26,11 @@ val networkModule = DI.Module(name = "Network") {
         ConnectionsHandler(
             scope = CoroutineScope(SupervisorJob()),
             serverSocketFactory = instance(),
+            singleNodeConnectionFactory = instance(),
         )
+    }
+    bindProvider<ISingleNodeConnectionFactory> {
+        SingleNodeConnectionFactory()
     }
     bindProvider<IListenNodeMessagesUseCase> {
         ListenNodeMessagesUseCase(instance())
