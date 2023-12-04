@@ -1,10 +1,15 @@
 package com.example.network
 
 import com.example.common.models.Node
+import com.example.common.models.NodeId
+import kotlinx.coroutines.flow.Flow
 
 interface IDiscoveryUseCase {
-    suspend operator fun invoke(
+
+    operator fun invoke(
         myPort: Int,
+        myId: NodeId,
         hashToFind: String,
-    ): List<Node>
+        myName: String,
+    ): Flow<Node>
 }
