@@ -7,12 +7,14 @@ import com.example.common.models.CalculationResult
  * Each method send message to all nodes from NodesRepository
  */
 interface INodesBroadcastRepository {
-    //TODO
-    suspend fun sendMyInfo(port: Int)
-    //TODO
-    suspend fun sendStart()
 
-    suspend fun sendStartedCalculation(
+
+    //TODO
+    suspend fun sendMyInfo(port: Int) // 1. Pobieram listę aktywnych nodów. 2. Dla każdego node zawołać metodę invoke z SendNodeMessageUseCase.
+    //TODO
+    suspend fun sendStart() // Będzie następnie tworzone
+
+    suspend fun sendStartedCalculation (
         batch: Batch,
         timestamp: Long,
         //TODO
@@ -28,4 +30,6 @@ interface INodesBroadcastRepository {
         timestamp: Long,
         //TODO
     )
+
+
 }
