@@ -5,6 +5,7 @@ import com.example.common.models.NodeId
 import com.example.network.IDiscoveryUseCase
 import com.example.network.internal.data.discovery.IDiscoveryApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onEach
 
 internal class DiscoveryUseCase(
     private val discoveryApi: IDiscoveryApi,
@@ -19,5 +20,5 @@ internal class DiscoveryUseCase(
         myPort = myPort,
         myId = myId,
         myName = myName,
-    )
+    ).onEach(::println)
 }

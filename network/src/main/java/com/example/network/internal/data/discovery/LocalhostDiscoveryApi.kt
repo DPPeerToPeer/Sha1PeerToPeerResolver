@@ -25,6 +25,7 @@ internal class LocalhostDiscoveryApi(
             myName = myName,
             myPort = myPort,
         )
+        println("Localhost Discovery")
         return udpBroadcastSocket.sendBroadcastAndListenMessages(
             message = Json.encodeToString(
                 serializer = BroadcastMessage.serializer(),
