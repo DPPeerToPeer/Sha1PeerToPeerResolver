@@ -2,6 +2,7 @@ package org.example.sha1PeerToPeer.domain.useCases
 
 import com.example.calculation.ICalculationRepository
 import com.example.common.models.Node
+import com.example.network.IGetIpOfNodeUseCase
 import com.example.network.IListenNodeMessagesUseCase
 import com.example.network.models.NodeMessage
 import com.example.nodes.data.repository.info.INodesInfoRepository
@@ -10,6 +11,7 @@ class HandleIncomingNodeMessagesUseCase(
     private val listenNodeMessagesUseCase: IListenNodeMessagesUseCase,
     private val calculationRepository: ICalculationRepository,
     private val nodesRepository: INodesInfoRepository,
+    private val getIpOfNodeUseCase: IGetIpOfNodeUseCase,
 ) {
 
     suspend operator fun invoke() {
@@ -17,14 +19,17 @@ class HandleIncomingNodeMessagesUseCase(
             .collect { (nodeId, message) ->
                 when (message) {
                     is NodeMessage.Discovery -> {
-                        nodesRepository.upsertNode(
-                            node = Node(
-                                id = nodeId,
-                                name = message.name,
-                                ip = message.ip,
-                                port = message.port,
-                            ),
-                        )
+                        val ipOfNode = getIpOfNodeUseCase(nodeId = nodeId)
+                        ipOfNode?.let {
+                            nodesRepository.upsertNode(
+                                node = Node(
+                                    id = nodeId,
+                                    name = message.name,
+                                    ip = ipOfNode,
+                                    port = message.port,
+                                ),
+                            )
+                        }
                     }
                     is NodeMessage.StartedCalculation -> {
                         calculationRepository.markBatchInProgressIfWasFirst(

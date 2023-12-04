@@ -9,4 +9,6 @@ interface ISingleNodeConnectionHandler {
     suspend fun listenIncomingMessages()
 
     suspend fun writeMessage(message: NodeMessage)
+
+    val socketIp: String
 }

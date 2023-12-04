@@ -36,4 +36,7 @@ internal class SingleNodeConnectionHandler(
         val jsonMessage = Json.encodeToString(serializer = NodeMessage.serializer(), value = message)
         socket.write(text = jsonMessage)
     }
+
+    override val socketIp: String
+        get() = socket.remoteIp
 }

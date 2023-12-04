@@ -41,6 +41,9 @@ internal class ConnectionsHandler(
         return Port(port = serverSocket.port)
     }
 
+    override fun getIpOfSocket(nodeId: NodeId): String? =
+        sockets.value[nodeId]?.socketIp
+
     override suspend fun sendNodeMessage(nodeId: NodeId, message: NodeMessage) {
         sockets.value[nodeId]?.writeMessage(message = message)
     }

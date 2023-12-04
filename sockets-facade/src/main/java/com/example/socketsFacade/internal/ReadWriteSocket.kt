@@ -2,6 +2,7 @@ package com.example.socketsFacade.internal
 
 import com.example.socketsFacade.IReadWriteSocket
 import io.ktor.network.sockets.*
+import io.ktor.util.network.*
 import io.ktor.utils.io.*
 
 internal class ReadWriteSocket(
@@ -22,4 +23,7 @@ internal class ReadWriteSocket(
     override suspend fun write(text: String) {
         writeChannel.writeStringUtf8(s = text)
     }
+
+    override val remoteIp: String
+        get() = socket.remoteAddress.toJavaAddress().address
 }
