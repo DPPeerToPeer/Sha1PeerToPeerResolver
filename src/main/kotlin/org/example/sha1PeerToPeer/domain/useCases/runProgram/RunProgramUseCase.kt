@@ -1,8 +1,10 @@
 package org.example.sha1PeerToPeer.domain.useCases.runProgram
 
 import com.example.calculation.ICalculationRepository
+import com.example.common.models.NodeId
 import com.example.network.IDiscoveryUseCase
 import com.example.network.IRunConnectionsHandlerUseCase
+import com.example.network.models.Port
 import com.example.nodes.data.repository.broadcast.INodesBroadcastRepository
 import com.example.nodes.data.repository.info.INodesInfoRepository
 import com.example.nodes.domain.useCase.RemoveNotActiveNodesUseCase
@@ -13,6 +15,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.example.sha1PeerToPeer.domain.models.ProgramState
 import org.example.sha1PeerToPeer.domain.useCases.HandleIncomingNodeMessagesUseCase
+import java.util.UUID
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -33,31 +36,43 @@ internal class RunProgramUseCase(
 
     private val programStateFlow: MutableStateFlow<ProgramState> = MutableStateFlow(ProgramState.NOT_STARTED)
 
-    override suspend fun invoke(hashToFind: String) {
+    override suspend fun invoke(
+        hashToFind: String,
+    ) {
         mutex.withLock {
             if (job == null) {
                 programStateFlow.value = ProgramState.INITIALIZING
                 val myPort = runConnectionsHandlerUseCase.invoke()
-                val currentNodes = discoveryUseCase.invoke(
-                    hashToFind = hashToFind,
-                    myPort = myPort.port,
-                )
-                nodesRepository.upsertManyNodes(nodes = currentNodes)
-
-                nodesBroadcastRepository.sendMyInfo(
-                    port = myPort.port,
-                )
 
                 job = appScope.launch {
-                    makeRepetitiveOperations()
+                    makeRepetitiveOperations(
+                        hashToFind = hashToFind,
+                        myPort = myPort,
+                    )
                 }
             }
         }
     }
 
-    private suspend fun makeRepetitiveOperations() {
+    private suspend fun makeRepetitiveOperations(
+        hashToFind: String,
+        myPort: Port,
+    ) {
         coroutineScope {
             programStateFlow.value = ProgramState.RUNNING
+
+            launch {
+                discoveryUseCase.invoke(
+                    hashToFind = hashToFind,
+                    myPort = myPort.port,
+                    myId = NodeId(id = UUID.randomUUID().toString()),
+                    myName = "Name",
+                ).collect {
+                    nodesRepository.upsertNode(node = it)
+                }
+            }
+
+            delay(5.seconds) // Give time for discovery for some nodes and start
 
             launch {
                 handleIncomingNodeMessagesUseCase()

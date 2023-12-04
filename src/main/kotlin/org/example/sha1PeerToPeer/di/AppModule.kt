@@ -2,6 +2,7 @@ package org.example.sha1PeerToPeer.di
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import org.example.sha1PeerToPeer.domain.useCases.HandleIncomingNodeMessagesUseCase
 import org.example.sha1PeerToPeer.domain.useCases.runProgram.FakeRunProgramUseCase
 import org.example.sha1PeerToPeer.domain.useCases.runProgram.IRunProgramUseCase
 import org.example.sha1PeerToPeer.domain.useCases.runProgram.RunProgramUseCase
@@ -31,5 +32,13 @@ val appModule = DI.Module("App") {
 
     bindSingleton<IRunProgramUseCase>(tag = "Fake") {
         FakeRunProgramUseCase()
+    }
+
+    bindProvider<HandleIncomingNodeMessagesUseCase> {
+        HandleIncomingNodeMessagesUseCase(
+            listenNodeMessagesUseCase = instance(),
+            calculationRepository = instance(),
+            nodesRepository = instance(),
+        )
     }
 }

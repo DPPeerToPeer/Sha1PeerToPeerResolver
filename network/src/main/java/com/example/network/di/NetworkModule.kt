@@ -4,6 +4,8 @@ import com.example.network.IDiscoveryUseCase
 import com.example.network.IListenNodeMessagesUseCase
 import com.example.network.IRunConnectionsHandlerUseCase
 import com.example.network.ISendNodeMessageUseCase
+import com.example.network.internal.data.discovery.IDiscoveryApi
+import com.example.network.internal.data.discovery.LocalhostDiscoveryApi
 import com.example.network.internal.data.nodes.ConnectionsHandler
 import com.example.network.internal.data.nodes.IConnectionsHandler
 import com.example.network.internal.data.nodes.messagesProxy.IMessagesProxy
@@ -49,5 +51,8 @@ val networkModule = DI.Module(name = "Network") {
     }
     bindSingleton<IMessagesProxy> {
         MessagesProxy()
+    }
+    bindProvider<IDiscoveryApi> {
+        LocalhostDiscoveryApi(udpBroadcastSocket = instance())
     }
 }
