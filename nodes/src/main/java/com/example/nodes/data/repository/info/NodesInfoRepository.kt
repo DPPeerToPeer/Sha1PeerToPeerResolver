@@ -22,18 +22,34 @@ internal class NodesInfoRepository : INodesInfoRepository {
     }
 
     override suspend fun upsertNode(node: Node) {
-        nodes.update {
-            var map =it.toMutableMap()
-            map[node] = NodeState(System.currentTimeMillis())
-            map.toMap()
+        nodes.update { currentNodes ->
+            val currentNodeIds = currentNodes.keys.map { it.id }
+
+            if (!currentNodeIds.contains(node.id)) {
+                // Node not found, add it to the map
+                currentNodes + (node to NodeState(Instant.now().toEpochMilli()))
+            } else {
+                // Node found, update its state
+                val updatedNodes = currentNodes.toMutableMap()
+                val nodeToFind = currentNodes.keys.find { it.id == node.id }
+
+                if (nodeToFind != null) {
+                    updatedNodes[nodeToFind] = NodeState(Instant.now().toEpochMilli())
+                }
+
+                updatedNodes.toMap()
             }
         }
+    }
 
 
     override suspend fun removeNode(id: NodeId) {
-        nodes.update {
+        nodes.update { it ->
             val mutableMap = it.toMutableMap()
             val nodeToFind = it.keys.find { it.id == id}
+
+            if(nodeToFind === null) it
+
             mutableMap.remove(nodeToFind)
             mutableMap.toMap()
             }
@@ -41,7 +57,7 @@ internal class NodesInfoRepository : INodesInfoRepository {
 
     override suspend fun updateHealth(nodeId: NodeId, timestamp: Long) {
 
-        nodes.update {
+        nodes.update { it ->
             val nodesList = it.keys.toList()
 
             val nodeToSwap = nodesList.find { it.id == nodeId }
