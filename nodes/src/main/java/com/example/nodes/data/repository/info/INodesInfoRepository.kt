@@ -19,4 +19,6 @@ interface INodesInfoRepository {
         nodeId: NodeId,
         timestamp: Long,
     ) // Dla danego node w kolekcji zamienia timestamp na podany jako argument
+
+    suspend fun getNodeHealth(node: Node)
 }
