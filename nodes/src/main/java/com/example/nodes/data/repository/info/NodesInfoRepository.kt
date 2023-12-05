@@ -12,52 +12,25 @@ internal class NodesInfoRepository : INodesInfoRepository {
     private val nodes: MutableStateFlow<Map<Node, NodeState>> = MutableStateFlow(emptyMap()) // MutableStateFlow
 
     override suspend fun upsertManyNodes(nodes: List<Node>) {
-
         for (node in nodes){
-            this.nodes.update { currentMap ->
-                val nodeList = currentMap.keys.toList() // current nodes stored in class
-                val ids: List<NodeId> = nodeList.map {it.id } // ids of current nodes stored in class
-
-                if (!ids.contains(node.id)) {
-
-                    currentMap.toMutableMap().apply {
-                        this[node] =  NodeState(Instant.now().toEpochMilli())
-                    }.toMap()
-                } else {
-
-                    currentMap
-                }
-            }
+            upsertNode(node)
         }
     }
 
     override suspend fun getActiveNodes(): List<Node> {
-
         return nodes.value.keys.toList()
-
-
     }
 
     override suspend fun upsertNode(node: Node) {
-        nodes.update { currentMap ->
-            val nodeList = currentMap.keys.toList()
-            val ids: List<NodeId> = nodeList.map {it.id }
-
-            if (!ids.contains(node.id)) {
-
-                currentMap.toMutableMap().apply {
-                    this[node] =  NodeState(Instant.now().toEpochMilli())
-                }.toMap()
-            } else {
-
-                currentMap
+        nodes.update {
+            var map =it.toMutableMap()
+            map[node] = NodeState(System.currentTimeMillis())
+            map.toMap()
             }
         }
-    }
+
 
     override suspend fun removeNode(id: NodeId) {
-
-
         nodes.update {
             val mutableMap = it.toMutableMap()
             val nodeToFind = it.keys.find { it.id == id}
@@ -73,7 +46,7 @@ internal class NodesInfoRepository : INodesInfoRepository {
 
             val nodeToSwap = nodesList.find { it.id == nodeId }
 
-            if(nodeToSwap == null) return
+            if(nodeToSwap === null) return
 
             val mutableNodeMap = it.toMutableMap()
             mutableNodeMap[nodeToSwap] = NodeState(timestamp)

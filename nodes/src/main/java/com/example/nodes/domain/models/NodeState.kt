@@ -1,5 +1,5 @@
 package com.example.nodes.domain.models
 
-data class NodeState(//TODO
+data class NodeState(
     val lastSeen: Long, //przechowuje czas
 )
