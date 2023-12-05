@@ -44,6 +44,11 @@ class NodesBroadcastRepository(
     }
 
     override suspend fun sendHealth(timestamp: Long) {
-        TODO("Not yet implemented")
+        var message = NodeMessage.Health(timestamp)
+        var avtiveNodesList = NodesInfoRepository.getActiveNodes()
+
+        for (node in avtiveNodesList){
+            sendNodeMessageUseCase.invoke(node.id,message)
+        }
     }
 }
