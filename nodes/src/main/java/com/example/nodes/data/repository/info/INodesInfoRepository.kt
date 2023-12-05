@@ -2,6 +2,7 @@ package com.example.nodes.data.repository.info
 
 import com.example.common.models.Node
 import com.example.common.models.NodeId
+import com.example.nodes.domain.models.NodeState
 
 interface INodesInfoRepository {
 
@@ -20,5 +21,5 @@ interface INodesInfoRepository {
         timestamp: Long,
     ) // Dla danego node w kolekcji zamienia timestamp na podany jako argument
 
-    suspend fun getNodeHealth(node: Node)
+    suspend fun getNodeHealth(node: Node): NodeState
 }

@@ -6,6 +6,7 @@ import com.example.nodes.domain.models.NodeState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import java.time.Instant
+import java.lang.NullPointerException
 
 internal class NodesInfoRepository : INodesInfoRepository {
 
@@ -70,6 +71,14 @@ internal class NodesInfoRepository : INodesInfoRepository {
             mutableNodeMap.toMap()
         }
     }
+
+    override suspend fun getNodeHealth(node: Node): NodeState{
+        var nodeHealth = nodes.value[node]
+
+        return nodeHealth!!
+    }
+
+
 }
 
 
