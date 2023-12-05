@@ -12,20 +12,17 @@ class NodesBroadcastRepository(
     private val NodesInfoRepository: INodesInfoRepository
 ): INodesBroadcastRepository {
 
-    // 1. Pobieram listę aktywnych nodów. 2. Dla każdego node zawołać metodę invoke z SendNodeMessageUseCase.
+
     override suspend fun sendMyInfo(port: Int) {
         TODO("Yet not implemented")// Tego jeszcze nie robic
-
-
     }
 
     override suspend fun sendStart() {
         TODO("Not yet implemented")// Tego jeszcze nie robic
-
     }
 
     override suspend fun sendStartedCalculation(batch: Batch, timestamp: Long) {
-        // Invoke method from sendNodeMessageUseCase for every node sending NodeMessage.StartedCalculation message
+        // Invokes method from sendNodeMessageUseCase on every node sending NodeMessage.StartedCalculation message
         var message = NodeMessage.StartedCalculation(batch, timestamp)
         var avtiveNodesList = NodesInfoRepository.getActiveNodes()
 
@@ -35,6 +32,7 @@ class NodesBroadcastRepository(
     }
 
     override suspend fun sendEndedCalculation(batch: Batch, calculationResult: CalculationResult) {
+        // Invokes method from sendNodeMessageUseCase on every node sending NodeMessage.EndedCalculation message
         var message = NodeMessage.EndedCalculation(batch, calculationResult)
         var avtiveNodesList = NodesInfoRepository.getActiveNodes()
 
@@ -44,6 +42,7 @@ class NodesBroadcastRepository(
     }
 
     override suspend fun sendHealth(timestamp: Long) {
+        // Invokes method from sendNodeMessageUseCase on every node sending NodeMessage.Health message
         var message = NodeMessage.Health(timestamp)
         var avtiveNodesList = NodesInfoRepository.getActiveNodes()
 
