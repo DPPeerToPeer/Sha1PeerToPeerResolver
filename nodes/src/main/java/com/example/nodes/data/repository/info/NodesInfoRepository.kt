@@ -6,7 +6,6 @@ import com.example.nodes.domain.models.NodeState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import java.time.Instant
-import java.lang.NullPointerException
 
 internal class NodesInfoRepository : INodesInfoRepository {
 
