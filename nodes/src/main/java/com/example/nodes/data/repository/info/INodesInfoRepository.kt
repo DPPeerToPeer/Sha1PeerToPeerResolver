@@ -6,20 +6,30 @@ import com.example.nodes.domain.models.NodeState
 
 interface INodesInfoRepository {
 
-    //przechowuje listę wszystkich nodów
 
-    suspend fun upsertManyNodes(nodes: List<Node>)// jeśli jest takie same id podmienic. Jeśli nie ma takiego id - dodać.
+    // If Node.id exists in nodes node is being swapped. Else it is being added.
+    suspend fun upsertManyNodes(nodes: List<Node>)
 
-    suspend fun getActiveNodes(): List<Node>// Zwracaca listę nodów
 
-    suspend fun upsertNode(node: Node)// Dodaje pojedyńczy node
+    // Method returns nodes
+    suspend fun getActiveNodes(): List<Node>
 
-    suspend fun removeNode(id: NodeId)// Usuwa pojedyńczy node
 
+    // Adds single node to nodes
+    suspend fun upsertNode(node: Node)
+
+
+    // Removes single node from nodes
+    suspend fun removeNode(id: NodeId)
+
+
+    // Swaps timestamp for node with given nodeId
     suspend fun updateHealth(
         nodeId: NodeId,
         timestamp: Long,
-    ) // Dla danego node w kolekcji zamienia timestamp na podany jako argument
+    )
 
+
+    // Returns given node health
     suspend fun getNodeHealth(node: Node): NodeState
 }
