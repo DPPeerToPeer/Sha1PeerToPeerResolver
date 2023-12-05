@@ -10,7 +10,7 @@ import java.lang.NullPointerException
 
 internal class NodesInfoRepository : INodesInfoRepository {
 
-    private val nodes: MutableStateFlow<Map<Node, NodeState>> = MutableStateFlow(emptyMap()) // MutableStateFlow
+    private val nodes: MutableStateFlow<Map<Node, NodeState>> = MutableStateFlow(emptyMap())
 
     override suspend fun upsertManyNodes(nodes: List<Node>) {
         for (node in nodes){
