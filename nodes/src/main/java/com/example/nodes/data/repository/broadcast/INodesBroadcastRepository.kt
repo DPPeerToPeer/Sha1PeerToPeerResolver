@@ -9,7 +9,6 @@ import com.example.common.models.CalculationResult
 interface INodesBroadcastRepository {
 
 
-    //TODO
     suspend fun sendMyInfo(port: Int) // 1. Pobieram listę aktywnych nodów. 2. Dla każdego node zawołać metodę invoke z SendNodeMessageUseCase.
     //TODO
     suspend fun sendStart() // Będzie następnie tworzone
