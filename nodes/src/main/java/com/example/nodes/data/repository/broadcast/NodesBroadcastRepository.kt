@@ -35,7 +35,12 @@ class NodesBroadcastRepository(
     }
 
     override suspend fun sendEndedCalculation(batch: Batch, calculationResult: CalculationResult) {
-        TODO("Not yet implemented")
+        var message = NodeMessage.EndedCalculation(batch, calculationResult)
+        var avtiveNodesList = NodesInfoRepository.getActiveNodes()
+
+        for (node in avtiveNodesList){
+            sendNodeMessageUseCase.invoke(node.id,message)
+        }
     }
 
     override suspend fun sendHealth(timestamp: Long) {
