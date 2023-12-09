@@ -9,10 +9,13 @@ import com.example.network.internal.data.nodes.singleNodeConnection.factory.ISin
 import com.example.network.models.NodeMessage
 import com.example.socketsFacade.IClientSocketFactory
 import com.example.socketsFacade.IReadWriteSocket
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
+private val logger = KotlinLogging.logger {}
 
 internal class SingleNodeConnectionRepository(
     private val scope: CoroutineScope,
@@ -31,7 +34,16 @@ internal class SingleNodeConnectionRepository(
         val singleConnectionsHandler = singleNodeConnectionFactory.create(
             socket = socket,
         )
+        logger.debug {
+            "createSingleConnectionHandlerAsServer listenNodeId"
+        }
         val nodeId = singleConnectionsHandler.listenNodeId()
+        logger.atDebug {
+            message = "listenedId"
+            payload = buildMap {
+                put("nodeId", nodeId)
+            }
+        }
         sockets.update { previousMap ->
             previousMap + (nodeId to singleConnectionsHandler)
         }
@@ -45,6 +57,9 @@ internal class SingleNodeConnectionRepository(
     private suspend fun createClientSocketAndRunHandlingMessages(
         node: Node,
     ): ISingleNodeConnectionHandler {
+        logger.debug {
+            "createClientSocketAndRunHandlingMessages"
+        }
         val socket = clientSocketFactory.create(
             ip = node.ip,
             port = node.port,
@@ -56,13 +71,29 @@ internal class SingleNodeConnectionRepository(
         val myId = getMyIdUseCase()
         singleConnectionsHandler.sendMyId(myId)
 
-        singleConnectionsHandler.writeMessage(
-            message = NodeMessage.Discovery(
-                port = myPortRepository.getMyPortOrThrow().port,
-                id = myId.id,
-                name = "myName",
-            ),
+        logger.atDebug {
+            message = "sendMyId"
+            payload = buildMap {
+                put("id", myId)
+            }
+        }
+
+        val discoveryMessage = NodeMessage.Discovery(
+            port = myPortRepository.getMyPortOrThrow().port,
+            id = myId.id,
+            name = "myName",
         )
+
+        singleConnectionsHandler.writeMessage(
+            message = discoveryMessage,
+        )
+
+        logger.atDebug {
+            message = "send discovery"
+            payload = buildMap {
+                put("message", discoveryMessage)
+            }
+        }
 
         sockets.update { previousMap ->
             previousMap + (node.id to singleConnectionsHandler)

@@ -10,12 +10,9 @@ import com.example.network.models.Port
 import com.example.socketsFacade.IReadWriteSocket
 import com.example.socketsFacade.IServerSocketFactory
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
 
 private val logger = KotlinLogging.logger {}
 
@@ -59,6 +56,13 @@ internal class ConnectionsHandler(
         singleNodeConnectionRepository.getIpOfSocket(nodeId = nodeId)
 
     override suspend fun sendNodeMessage(node: Node, message: NodeMessage) {
+        logger.atDebug {
+            this.message = "sendNodeMessage"
+            payload = buildMap {
+                put("node", node)
+                put("message", message)
+            }
+        }
         singleNodeConnectionRepository.getOrCreateSingleConnectionHandlerAsClient(node = node)
             .writeMessage(message = message)
     }

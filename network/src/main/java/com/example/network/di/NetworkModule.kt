@@ -19,12 +19,16 @@ import com.example.network.internal.useCase.ListenNodeMessagesUseCase
 import com.example.network.internal.useCase.RunConnectionsHandlerUseCase
 import com.example.network.internal.useCase.SendNodeMessageUseCase
 import com.example.socketsFacade.di.socketsFacadeModule
+import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import org.kodein.di.DI
 import org.kodein.di.bindProvider
 import org.kodein.di.bindSingleton
 import org.kodein.di.instance
+
+private val logger = KotlinLogging.logger {}
 
 val networkModule = DI.Module(name = "Network") {
     import(socketsFacadeModule)
@@ -39,7 +43,14 @@ val networkModule = DI.Module(name = "Network") {
         )
     }
     bindSingleton<CoroutineScope> {
-        CoroutineScope(SupervisorJob())
+        CoroutineScope(
+            SupervisorJob() + CoroutineExceptionHandler { coroutineContext, throwable ->
+                logger.atError {
+                    message = "Error in app scope children"
+                    cause = throwable
+                }
+            },
+        )
     }
     bindProvider<ISingleNodeConnectionFactory> {
         SingleNodeConnectionFactory(messagesProxy = instance())
