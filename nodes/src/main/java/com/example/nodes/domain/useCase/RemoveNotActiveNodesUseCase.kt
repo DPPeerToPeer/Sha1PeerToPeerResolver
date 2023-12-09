@@ -1,7 +1,25 @@
 package com.example.nodes.domain.useCase
 
-class RemoveNotActiveNodesUseCase {
+import com.example.nodes.data.repository.info.INodesInfoRepository
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
+
+class RemoveNotActiveNodesUseCase(
+    private val nodesInfoRepository: INodesInfoRepository,
+    private val timeToLive: Duration = 1.minutes,
+) {
     suspend operator fun invoke() {
-        TODO()
+        // Removing nodes which haven't reported their presence since timeToLive
+        val activeNodesList = nodesInfoRepository.getActiveNodes()
+
+        for (node in activeNodesList) {
+            val currentTime = System.currentTimeMillis().milliseconds
+            val nodeHealth = nodesInfoRepository.getNodeHealth(node).lastSeen.milliseconds
+
+            val nodeWasSeenThisTimeAgo = currentTime - nodeHealth
+
+            if (nodeWasSeenThisTimeAgo >= timeToLive) nodesInfoRepository.removeNode(node.id)
+        }
     }
 }

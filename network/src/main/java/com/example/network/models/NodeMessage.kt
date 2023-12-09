@@ -9,7 +9,7 @@ sealed interface NodeMessage {
 
     @Serializable
     data class Discovery(
-        val ip: String,
+//        val ip: String,
         val port: Int,
         val name: String,
         val id: String,
