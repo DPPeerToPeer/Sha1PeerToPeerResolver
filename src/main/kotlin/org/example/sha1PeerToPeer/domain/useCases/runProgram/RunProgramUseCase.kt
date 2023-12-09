@@ -9,10 +9,13 @@ import com.example.nodes.data.repository.broadcast.INodesBroadcastRepository
 import com.example.nodes.data.repository.info.INodesInfoRepository
 import com.example.nodes.domain.useCase.RemoveNotActiveNodesUseCase
 import com.example.nodes.domain.useCase.SendHealthUseCase
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.example.sha1PeerToPeer.domain.useCases.HandleIncomingNodeMessagesUseCase
+
+private val logger = KotlinLogging.logger {}
 
 internal class RunProgramUseCase(
     private val runConnectionsHandlerUseCase: IRunConnectionsHandlerUseCase,
@@ -34,6 +37,12 @@ internal class RunProgramUseCase(
     override suspend fun invoke(
         hashToFind: String,
     ) {
+        logger.atDebug {
+            message = "invoke"
+            payload = buildMap {
+                put("hashToFind", hashToFind)
+            }
+        }
         mutex.withLock {
             if (job == null) {
                 val myPort = runConnectionsHandlerUseCase.invoke()

@@ -40,6 +40,9 @@ dependencies {
     testImplementation("io.mockk:mockk:1.13.8")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     testImplementation("app.cash.turbine:turbine:1.0.0")
+
+    implementation("org.slf4j:slf4j-simple:2.0.3")
+    implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
 }
 
 compose.desktop {

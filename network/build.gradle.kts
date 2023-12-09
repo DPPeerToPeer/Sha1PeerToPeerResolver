@@ -27,4 +27,5 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     testImplementation("app.cash.turbine:turbine:1.0.0")
     testImplementation("io.kotest:kotest-assertions-core:5.8.0")
+    implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
 }

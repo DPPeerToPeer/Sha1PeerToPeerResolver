@@ -9,11 +9,15 @@ import com.example.network.models.NodeMessage
 import com.example.network.models.Port
 import com.example.socketsFacade.IReadWriteSocket
 import com.example.socketsFacade.IServerSocketFactory
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+
+private val logger = KotlinLogging.logger {}
 
 internal class ConnectionsHandler(
     private val scope: CoroutineScope,
@@ -30,13 +34,25 @@ internal class ConnectionsHandler(
             supervisorScope {
                 while (coroutineContext.isActive) {
                     val socket: IReadWriteSocket = serverSocket.accept()
+                    logger.atDebug {
+                        message = "New socket accepted"
+                        payload = buildMap {
+                            put("ip", socket.remoteIp)
+                        }
+                    }
                     launch {
                         singleNodeConnectionRepository.createSingleConnectionHandlerAsServer(socket = socket)
                     }
                 }
             }
         }
-        return Port(port = serverSocket.port).also { myPortRepository.setMyPort(port = it) }
+        return Port(port = serverSocket.port)
+            .also { myPortRepository.setMyPort(port = it) }
+            .also {
+                logger.debug {
+                    "Server started with port $it"
+                }
+            }
     }
 
     override fun getIpOfSocket(nodeId: NodeId): String? =
@@ -49,4 +65,13 @@ internal class ConnectionsHandler(
 
     override fun listenNodesMessages(): Flow<Pair<NodeId, NodeMessage>> = messagesProxy
         .listenMessages()
+        .onEach {
+            logger.atDebug {
+                message = "New message listened"
+                payload = buildMap {
+                    put("nodeId", it.first)
+                    put("message", it.second)
+                }
+            }
+        }
 }
