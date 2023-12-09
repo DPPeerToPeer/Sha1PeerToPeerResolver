@@ -1,6 +1,6 @@
 package com.example.nodes.di
 
-import com.example.common.di.commonModule
+import com.example.common.REMOVE_NODE_AFTER_INACTIVITY_DURATION
 import com.example.nodes.data.repository.broadcast.INodesBroadcastRepository
 import com.example.nodes.data.repository.broadcast.NodesBroadcastRepository
 import com.example.nodes.data.repository.info.INodesInfoRepository
@@ -13,9 +13,8 @@ import org.kodein.di.bindSingleton
 import org.kodein.di.instance
 
 val nodesModule = DI.Module(name = "Nodes") {
-    import(commonModule)
     bindSingleton<INodesInfoRepository> {
-        NodesInfoRepository()
+        NodesInfoRepository(getCurrentTimeUseCase = instance())
     }
     bindProvider<SendHealthUseCase> {
         SendHealthUseCase(
@@ -24,9 +23,16 @@ val nodesModule = DI.Module(name = "Nodes") {
         )
     }
     bindProvider<RemoveNotActiveNodesUseCase> {
-        RemoveNotActiveNodesUseCase()
+        RemoveNotActiveNodesUseCase(
+            nodesInfoRepository = instance(),
+            getCurrentTimeUseCase = instance(),
+            timeToLive = REMOVE_NODE_AFTER_INACTIVITY_DURATION,
+        )
     }
     bindProvider<INodesBroadcastRepository> {
-        NodesBroadcastRepository()
+        NodesBroadcastRepository(
+            sendNodeMessageUseCase = instance(),
+            nodesInfoRepository = instance(),
+        )
     }
 }

@@ -19,6 +19,10 @@ internal class SingleNodeConnectionHandler(
         return NodeId(id = socket.readLine()!!).also { this.nodeId = it }
     }
 
+    override suspend fun sendMyId(id: NodeId) {
+        socket.write(text = id.id)
+    }
+
     override suspend fun listenIncomingMessages() {
         while (coroutineContext.isActive) {
             val incomingLine = socket.readLine()
@@ -36,4 +40,7 @@ internal class SingleNodeConnectionHandler(
         val jsonMessage = Json.encodeToString(serializer = NodeMessage.serializer(), value = message)
         socket.write(text = jsonMessage)
     }
+
+    override val socketIp: String
+        get() = socket.remoteIp
 }

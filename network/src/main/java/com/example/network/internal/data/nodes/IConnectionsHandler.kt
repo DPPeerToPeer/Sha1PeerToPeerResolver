@@ -1,5 +1,6 @@
 package com.example.network.internal.data.nodes
 
+import com.example.common.models.Node
 import com.example.common.models.NodeId
 import com.example.network.models.NodeMessage
 import com.example.network.models.Port
@@ -9,7 +10,9 @@ internal interface IConnectionsHandler {
 
     fun runAndReturnPort(): Port
 
-    suspend fun sendNodeMessage(nodeId: NodeId, message: NodeMessage)
+    fun getIpOfSocket(nodeId: NodeId): String?
+
+    suspend fun sendNodeMessage(node: Node, message: NodeMessage)
 
     fun listenNodesMessages(): Flow<Pair<NodeId, NodeMessage>>
 }

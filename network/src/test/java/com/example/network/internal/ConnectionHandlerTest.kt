@@ -1,10 +1,9 @@
 package com.example.network.internal
 
-import com.example.common.models.NodeId
 import com.example.network.internal.data.nodes.ConnectionsHandler
 import com.example.network.internal.data.nodes.messagesProxy.IMessagesProxy
-import com.example.network.internal.data.nodes.singleNodeConnection.ISingleNodeConnectionFactory
-import com.example.network.internal.data.nodes.singleNodeConnection.ISingleNodeConnectionHandler
+import com.example.network.internal.data.nodes.myPort.IMyPortRepository
+import com.example.network.internal.data.nodes.singleNodeConnection.repository.ISingleNodeConnectionRepository
 import com.example.network.models.Port
 import com.example.network.utils.BaseTest
 import com.example.socketsFacade.IReadWriteSocket
@@ -16,10 +15,10 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -32,10 +31,13 @@ internal class ConnectionHandlerTest : BaseTest() {
     private lateinit var serverSocketFactory: IServerSocketFactory
 
     @MockK
-    private lateinit var singleNodeConnectionFactory: ISingleNodeConnectionFactory
+    private lateinit var messagesProxy: IMessagesProxy
+
+    @RelaxedMockK
+    private lateinit var myPortRepository: IMyPortRepository
 
     @MockK
-    private lateinit var messagesProxy: IMessagesProxy
+    private lateinit var singleNodeConnectionRepository: ISingleNodeConnectionRepository
 
     @InjectMockKs
     private lateinit var connectionsHandler: ConnectionsHandler
@@ -55,6 +57,9 @@ internal class ConnectionHandlerTest : BaseTest() {
         coVerify(exactly = 1) {
             serverSocketFactory.create()
         }
+        coVerify(exactly = 1) {
+            myPortRepository.setMyPort(port = Port(port = 6))
+        }
     }
 
     @Test
@@ -69,38 +74,19 @@ internal class ConnectionHandlerTest : BaseTest() {
 
         val readWriteSocket1 = mockk<IReadWriteSocket>()
 
-        val singleNodeConnectionHandler1 = mockSingleNodeConnectionHandler(nodeId = NodeId(id = "id1"))
         coEvery {
-            singleNodeConnectionFactory.create(
+            singleNodeConnectionRepository.createSingleConnectionHandlerAsServer(
                 socket = readWriteSocket1,
             )
-        } returns singleNodeConnectionHandler1
+        } returns Unit
 
         acceptChannel.send(readWriteSocket1)
 
         coVerify(exactly = 1) {
-            singleNodeConnectionHandler1.listenNodeId()
+            singleNodeConnectionRepository.createSingleConnectionHandlerAsServer(
+                socket = readWriteSocket1,
+            )
         }
-        coVerify(exactly = 1) {
-            singleNodeConnectionHandler1.listenIncomingMessages()
-        }
-    }
-
-    private fun mockSingleNodeConnectionHandler(
-        nodeId: NodeId,
-    ): ISingleNodeConnectionHandler {
-        val singleNodeConnectionHandler = mockk<ISingleNodeConnectionHandler>()
-
-        coEvery {
-            singleNodeConnectionHandler.listenNodeId()
-        } returns nodeId
-        coEvery {
-            singleNodeConnectionHandler.listenIncomingMessages()
-        } coAnswers {
-            awaitCancellation()
-        }
-
-        return singleNodeConnectionHandler
     }
 
     private fun mockServerSocket(

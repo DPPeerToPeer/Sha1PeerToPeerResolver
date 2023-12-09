@@ -4,10 +4,13 @@ import com.example.common.models.Node
 import com.example.common.models.NodeId
 import com.example.network.models.BroadcastMessage
 import com.example.socketsFacade.IUdpBroadcastSocket
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.json.Json
 import kotlin.coroutines.coroutineContext
+
+private val logger = KotlinLogging.logger {}
 
 internal class LocalhostDiscoveryApi(
     private val udpBroadcastSocket: IUdpBroadcastSocket,
@@ -25,7 +28,12 @@ internal class LocalhostDiscoveryApi(
             myName = myName,
             myPort = myPort,
         )
-        println("Localhost Discovery")
+        logger.atDebug {
+            message = "runDiscoveryAndListenNewNodes"
+            payload = buildMap {
+                put("messageToSend", messageToSend)
+            }
+        }
         return udpBroadcastSocket.sendBroadcastAndListenMessages(
             message = Json.encodeToString(
                 serializer = BroadcastMessage.serializer(),

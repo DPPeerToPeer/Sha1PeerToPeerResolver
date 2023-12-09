@@ -25,7 +25,7 @@ class NodesBroadcastRepository(
         val activeNodesList = nodesInfoRepository.getActiveNodes()
 
         for (node in activeNodesList) {
-            sendNodeMessageUseCase.invoke(node.id, message)
+            sendNodeMessageUseCase.invoke(node, message)
         }
     }
 
@@ -35,7 +35,7 @@ class NodesBroadcastRepository(
         val activeNodesList = nodesInfoRepository.getActiveNodes()
 
         for (node in activeNodesList) {
-            sendNodeMessageUseCase.invoke(node.id, message)
+            sendNodeMessageUseCase.invoke(node, message)
         }
     }
 
@@ -45,7 +45,7 @@ class NodesBroadcastRepository(
         val activeNodesList = nodesInfoRepository.getActiveNodes()
 
         for (node in activeNodesList) {
-            sendNodeMessageUseCase.invoke(node.id, message)
+            sendNodeMessageUseCase.invoke(node, message)
         }
     }
 }

@@ -2,6 +2,7 @@ package com.example.socketsFacade.internal
 
 import com.example.socketsFacade.IUdpBroadcastSocket
 import com.example.socketsFacade.MessageWithIp
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.util.network.*
@@ -9,6 +10,8 @@ import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
+
+private val logger = KotlinLogging.logger {}
 
 internal class UdpBroadcastSocket : IUdpBroadcastSocket {
 
@@ -30,17 +33,35 @@ internal class UdpBroadcastSocket : IUdpBroadcastSocket {
                         address = address,
                     ),
                 )
-                println("Broadcast sent")
-                launch(CoroutineExceptionHandler { coroutineContext, throwable -> throwable.printStackTrace() }) {
+                logger.debug {
+                    "Broadcast sent"
+                }
+                launch(
+                    CoroutineExceptionHandler { coroutineContext, throwable ->
+                        logger.warn(throwable = throwable) {
+                            "Error in Receiving message coroutine"
+                        }
+                    },
+                ) {
                     while (coroutineContext.isActive) {
-                        println("Waiting")
+                        logger.debug {
+                            "Waiting for message"
+                        }
                         val datagram = socket.receive()
-                        println(datagram.toString())
                         val text = datagram.packet.readText()
+                        val ip = datagram.address.toJavaAddress().address
+
+                        logger.atDebug {
+                            this.message = "UDP packet received"
+                            payload = buildMap {
+                                put("message", text)
+                                put("ip", ip)
+                            }
+                        }
                         send(
                             MessageWithIp(
                                 message = text,
-                                ip = datagram.address.toJavaAddress().address,
+                                ip = ip,
                             ),
                         )
                     }

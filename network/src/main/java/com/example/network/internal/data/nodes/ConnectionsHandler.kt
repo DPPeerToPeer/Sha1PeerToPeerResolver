@@ -1,29 +1,31 @@
 package com.example.network.internal.data.nodes
 
+import com.example.common.models.Node
 import com.example.common.models.NodeId
 import com.example.network.internal.data.nodes.messagesProxy.IMessagesProxy
-import com.example.network.internal.data.nodes.singleNodeConnection.ISingleNodeConnectionFactory
-import com.example.network.internal.data.nodes.singleNodeConnection.ISingleNodeConnectionHandler
+import com.example.network.internal.data.nodes.myPort.IMyPortRepository
+import com.example.network.internal.data.nodes.singleNodeConnection.repository.ISingleNodeConnectionRepository
 import com.example.network.models.NodeMessage
 import com.example.network.models.Port
 import com.example.socketsFacade.IReadWriteSocket
 import com.example.socketsFacade.IServerSocketFactory
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 
+private val logger = KotlinLogging.logger {}
+
 internal class ConnectionsHandler(
     private val scope: CoroutineScope,
     private val serverSocketFactory: IServerSocketFactory,
-    private val singleNodeConnectionFactory: ISingleNodeConnectionFactory,
     private val messagesProxy: IMessagesProxy,
+    private val singleNodeConnectionRepository: ISingleNodeConnectionRepository,
+    private val myPortRepository: IMyPortRepository,
 ) : IConnectionsHandler {
-
-    private val sockets: MutableStateFlow<Map<NodeId, ISingleNodeConnectionHandler>> = MutableStateFlow(emptyMap())
 
     override fun runAndReturnPort(): Port {
         val serverSocket = serverSocketFactory.create()
@@ -32,31 +34,44 @@ internal class ConnectionsHandler(
             supervisorScope {
                 while (coroutineContext.isActive) {
                     val socket: IReadWriteSocket = serverSocket.accept()
+                    logger.atDebug {
+                        message = "New socket accepted"
+                        payload = buildMap {
+                            put("ip", socket.remoteIp)
+                        }
+                    }
                     launch {
-                        runHandlingNewSocket(socket)
+                        singleNodeConnectionRepository.createSingleConnectionHandlerAsServer(socket = socket)
                     }
                 }
             }
         }
         return Port(port = serverSocket.port)
+            .also { myPortRepository.setMyPort(port = it) }
+            .also {
+                logger.debug {
+                    "Server started with port $it"
+                }
+            }
     }
 
-    override suspend fun sendNodeMessage(nodeId: NodeId, message: NodeMessage) {
-        sockets.value[nodeId]?.writeMessage(message = message)
+    override fun getIpOfSocket(nodeId: NodeId): String? =
+        singleNodeConnectionRepository.getIpOfSocket(nodeId = nodeId)
+
+    override suspend fun sendNodeMessage(node: Node, message: NodeMessage) {
+        singleNodeConnectionRepository.getOrCreateSingleConnectionHandlerAsClient(node = node)
+            .writeMessage(message = message)
     }
 
     override fun listenNodesMessages(): Flow<Pair<NodeId, NodeMessage>> = messagesProxy
         .listenMessages()
-
-    private suspend fun runHandlingNewSocket(socket: IReadWriteSocket) {
-        val singleConnectionsHandler = singleNodeConnectionFactory.create(
-            socket = socket,
-        )
-        val nodeId = singleConnectionsHandler.listenNodeId()
-        sockets.update { previousMap ->
-            previousMap + (nodeId to singleConnectionsHandler)
+        .onEach {
+            logger.atDebug {
+                message = "New message listened"
+                payload = buildMap {
+                    put("nodeId", it.first)
+                    put("message", it.second)
+                }
+            }
         }
-
-        singleConnectionsHandler.listenIncomingMessages()
-    }
 }

@@ -1,7 +1,7 @@
 package org.example.sha1PeerToPeer.domain.useCases.runProgram
 
 import com.example.calculation.ICalculationRepository
-import com.example.common.models.NodeId
+import com.example.common.*
 import com.example.network.IDiscoveryUseCase
 import com.example.network.IRunConnectionsHandlerUseCase
 import com.example.network.models.Port
@@ -9,15 +9,13 @@ import com.example.nodes.data.repository.broadcast.INodesBroadcastRepository
 import com.example.nodes.data.repository.info.INodesInfoRepository
 import com.example.nodes.domain.useCase.RemoveNotActiveNodesUseCase
 import com.example.nodes.domain.useCase.SendHealthUseCase
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import org.example.sha1PeerToPeer.domain.models.ProgramState
 import org.example.sha1PeerToPeer.domain.useCases.HandleIncomingNodeMessagesUseCase
-import java.util.UUID
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
+
+private val logger = KotlinLogging.logger {}
 
 internal class RunProgramUseCase(
     private val runConnectionsHandlerUseCase: IRunConnectionsHandlerUseCase,
@@ -28,20 +26,25 @@ internal class RunProgramUseCase(
     private val removeNotActiveNodesUseCase: RemoveNotActiveNodesUseCase,
     private val nodesRepository: INodesInfoRepository,
     private val nodesBroadcastRepository: INodesBroadcastRepository,
+    private val getMyIdUseCase: IGetMyIdUseCase,
     private val appScope: CoroutineScope,
+    private val getCurrentTimeUseCase: IGetCurrentTimeUseCase,
 ) : IRunProgramUseCase {
 
     private var job: Job? = null
     private val mutex: Mutex = Mutex()
 
-    private val programStateFlow: MutableStateFlow<ProgramState> = MutableStateFlow(ProgramState.NOT_STARTED)
-
     override suspend fun invoke(
         hashToFind: String,
     ) {
+        logger.atDebug {
+            message = "invoke"
+            payload = buildMap {
+                put("hashToFind", hashToFind)
+            }
+        }
         mutex.withLock {
             if (job == null) {
-                programStateFlow.value = ProgramState.INITIALIZING
                 val myPort = runConnectionsHandlerUseCase.invoke()
 
                 job = appScope.launch {
@@ -59,20 +62,21 @@ internal class RunProgramUseCase(
         myPort: Port,
     ) {
         coroutineScope {
-            programStateFlow.value = ProgramState.RUNNING
-
+            logger.debug {
+                "Repetitive operations start"
+            }
             launch {
                 discoveryUseCase.invoke(
                     hashToFind = hashToFind,
                     myPort = myPort.port,
-                    myId = NodeId(id = UUID.randomUUID().toString()),
+                    myId = getMyIdUseCase(),
                     myName = "Name",
                 ).collect {
                     nodesRepository.upsertNode(node = it)
                 }
             }
 
-            delay(5.seconds) // Give time for discovery for some nodes and start
+            delay(AFTER_DISCOVERY_PROGRAM_DELAY) // Give time for discovery for some nodes and start
 
             launch {
                 handleIncomingNodeMessagesUseCase()
@@ -82,7 +86,7 @@ internal class RunProgramUseCase(
                     val batch = calculationRepository.getAvailableBatchAndMarkMine()
                     batch?.let {
                         val job = launch {
-                            nodesBroadcastRepository.sendStartedCalculation(batch = batch, timestamp = System.currentTimeMillis())
+                            nodesBroadcastRepository.sendStartedCalculation(batch = batch, timestamp = getCurrentTimeUseCase())
                             calculationRepository.startCalculation(batch = batch)
                         }
                         while (!job.isCompleted) {
@@ -92,19 +96,19 @@ internal class RunProgramUseCase(
                                 break
                             }
                         }
-                    } ?: delay(1.seconds)
+                    } ?: delay(TRY_AGAIN_DELAY_IF_NO_BATCH_AVAILABLE)
                 }
             }
             launch {
                 while (isActive) {
                     sendHealthUseCase()
-                    delay(10.seconds)
+                    delay(SEND_HEALTH_INTERVAL)
                 }
             }
             launch {
                 while (isActive) {
                     removeNotActiveNodesUseCase()
-                    delay(1.minutes)
+                    delay(REMOVE_NODE_AFTER_INACTIVITY_DURATION)
                 }
             }
         }
