@@ -1,5 +1,6 @@
 package com.example.network.di
 
+import com.example.common.di.commonModule
 import com.example.network.*
 import com.example.network.internal.data.discovery.IDiscoveryApi
 import com.example.network.internal.data.discovery.LocalhostDiscoveryApi
@@ -7,8 +8,11 @@ import com.example.network.internal.data.nodes.ConnectionsHandler
 import com.example.network.internal.data.nodes.IConnectionsHandler
 import com.example.network.internal.data.nodes.messagesProxy.IMessagesProxy
 import com.example.network.internal.data.nodes.messagesProxy.MessagesProxy
+import com.example.network.internal.data.nodes.myPort.IMyPortRepository
+import com.example.network.internal.data.nodes.myPort.MyPortRepository
 import com.example.network.internal.data.nodes.singleNodeConnection.ISingleNodeConnectionFactory
 import com.example.network.internal.data.nodes.singleNodeConnection.SingleNodeConnectionFactory
+import com.example.network.internal.data.nodes.singleNodeConnection.repository.SingleNodeConnectionRepository
 import com.example.network.internal.useCase.*
 import com.example.network.internal.useCase.DiscoveryUseCase
 import com.example.network.internal.useCase.ListenNodeMessagesUseCase
@@ -24,15 +28,18 @@ import org.kodein.di.instance
 
 val networkModule = DI.Module(name = "Network") {
     import(socketsFacadeModule)
+    import(commonModule)
     bindSingleton<IConnectionsHandler> {
         ConnectionsHandler(
-            scope = CoroutineScope(SupervisorJob()),
+            scope = instance(),
             serverSocketFactory = instance(),
-            singleNodeConnectionFactory = instance(),
             messagesProxy = instance(),
-            clientSocketFactory = instance(),
-            getMyIdUseCase = instance(),
+            myPortRepository = instance(),
+            singleNodeConnectionRepository = instance(),
         )
+    }
+    bindSingleton<CoroutineScope> {
+        CoroutineScope(SupervisorJob())
     }
     bindProvider<ISingleNodeConnectionFactory> {
         SingleNodeConnectionFactory(messagesProxy = instance())
@@ -57,5 +64,17 @@ val networkModule = DI.Module(name = "Network") {
     }
     bindProvider<IGetIpOfNodeUseCase> {
         GetIpOfNodeUseCase(connectionHandler = instance())
+    }
+    bindSingleton<IMyPortRepository> {
+        MyPortRepository()
+    }
+    bindSingleton {
+        SingleNodeConnectionRepository(
+            scope = instance(),
+            singleNodeConnectionFactory = instance(),
+            clientSocketFactory = instance(),
+            myPortRepository = instance(),
+            getMyIdUseCase = instance(),
+        )
     }
 }

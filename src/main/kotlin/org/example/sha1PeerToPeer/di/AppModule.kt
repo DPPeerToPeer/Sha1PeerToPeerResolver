@@ -27,6 +27,8 @@ val appModule = DI.Module("App") {
             nodesRepository = instance(),
             nodesBroadcastRepository = instance(),
             appScope = CoroutineScope(SupervisorJob()),
+            getCurrentTimeUseCase = instance(),
+            getMyIdUseCase = instance(),
         )
     }
 
