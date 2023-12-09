@@ -1,7 +1,7 @@
 package org.example.sha1PeerToPeer.domain.useCases.runProgram
 
 import com.example.calculation.ICalculationRepository
-import com.example.common.models.NodeId
+import com.example.common.IGetMyIdUseCase
 import com.example.network.IDiscoveryUseCase
 import com.example.network.IRunConnectionsHandlerUseCase
 import com.example.network.models.Port
@@ -13,7 +13,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.example.sha1PeerToPeer.domain.useCases.HandleIncomingNodeMessagesUseCase
-import java.util.*
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -26,6 +25,7 @@ internal class RunProgramUseCase(
     private val removeNotActiveNodesUseCase: RemoveNotActiveNodesUseCase,
     private val nodesRepository: INodesInfoRepository,
     private val nodesBroadcastRepository: INodesBroadcastRepository,
+    private val getMyIdUseCase: IGetMyIdUseCase,
     private val appScope: CoroutineScope,
 ) : IRunProgramUseCase {
 
@@ -58,7 +58,7 @@ internal class RunProgramUseCase(
                 discoveryUseCase.invoke(
                     hashToFind = hashToFind,
                     myPort = myPort.port,
-                    myId = NodeId(id = UUID.randomUUID().toString()),
+                    myId = getMyIdUseCase(),
                     myName = "Name",
                 ).collect {
                     nodesRepository.upsertNode(node = it)
