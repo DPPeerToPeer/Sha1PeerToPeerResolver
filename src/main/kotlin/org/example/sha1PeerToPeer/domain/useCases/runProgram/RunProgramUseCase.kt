@@ -1,8 +1,7 @@
 package org.example.sha1PeerToPeer.domain.useCases.runProgram
 
 import com.example.calculation.ICalculationRepository
-import com.example.common.IGetCurrentTimeUseCase
-import com.example.common.IGetMyIdUseCase
+import com.example.common.*
 import com.example.network.IDiscoveryUseCase
 import com.example.network.IRunConnectionsHandlerUseCase
 import com.example.network.models.Port
@@ -14,8 +13,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.example.sha1PeerToPeer.domain.useCases.HandleIncomingNodeMessagesUseCase
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 internal class RunProgramUseCase(
     private val runConnectionsHandlerUseCase: IRunConnectionsHandlerUseCase,
@@ -67,7 +64,7 @@ internal class RunProgramUseCase(
                 }
             }
 
-            delay(5.seconds) // Give time for discovery for some nodes and start
+            delay(AFTER_DISCOVERY_PROGRAM_DELAY) // Give time for discovery for some nodes and start
 
             launch {
                 handleIncomingNodeMessagesUseCase()
@@ -87,19 +84,19 @@ internal class RunProgramUseCase(
                                 break
                             }
                         }
-                    } ?: delay(1.seconds)
+                    } ?: delay(TRY_AGAIN_DELAY_IF_NO_BATCH_AVAILABLE)
                 }
             }
             launch {
                 while (isActive) {
                     sendHealthUseCase()
-                    delay(10.seconds)
+                    delay(SEND_HEALTH_INTERVAL)
                 }
             }
             launch {
                 while (isActive) {
                     removeNotActiveNodesUseCase()
-                    delay(1.minutes)
+                    delay(REMOVE_NODE_AFTER_INACTIVITY_DURATION)
                 }
             }
         }
