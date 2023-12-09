@@ -4,8 +4,8 @@ import com.example.common.IGetMyIdUseCase
 import com.example.common.models.Node
 import com.example.common.models.NodeId
 import com.example.network.internal.data.nodes.myPort.IMyPortRepository
-import com.example.network.internal.data.nodes.singleNodeConnection.ISingleNodeConnectionFactory
 import com.example.network.internal.data.nodes.singleNodeConnection.ISingleNodeConnectionHandler
+import com.example.network.internal.data.nodes.singleNodeConnection.factory.ISingleNodeConnectionFactory
 import com.example.network.models.NodeMessage
 import com.example.socketsFacade.IClientSocketFactory
 import com.example.socketsFacade.IReadWriteSocket

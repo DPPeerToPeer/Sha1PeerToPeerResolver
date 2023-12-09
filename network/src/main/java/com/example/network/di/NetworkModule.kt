@@ -10,8 +10,8 @@ import com.example.network.internal.data.nodes.messagesProxy.IMessagesProxy
 import com.example.network.internal.data.nodes.messagesProxy.MessagesProxy
 import com.example.network.internal.data.nodes.myPort.IMyPortRepository
 import com.example.network.internal.data.nodes.myPort.MyPortRepository
-import com.example.network.internal.data.nodes.singleNodeConnection.ISingleNodeConnectionFactory
-import com.example.network.internal.data.nodes.singleNodeConnection.SingleNodeConnectionFactory
+import com.example.network.internal.data.nodes.singleNodeConnection.factory.ISingleNodeConnectionFactory
+import com.example.network.internal.data.nodes.singleNodeConnection.factory.SingleNodeConnectionFactory
 import com.example.network.internal.data.nodes.singleNodeConnection.repository.SingleNodeConnectionRepository
 import com.example.network.internal.useCase.*
 import com.example.network.internal.useCase.DiscoveryUseCase
