@@ -6,6 +6,8 @@ import com.example.network.models.NodeMessage
 interface ISingleNodeConnectionHandler {
     suspend fun listenNodeId(): NodeId
 
+    suspend fun sendMyId(id: NodeId)
+
     suspend fun listenIncomingMessages()
 
     suspend fun writeMessage(message: NodeMessage)

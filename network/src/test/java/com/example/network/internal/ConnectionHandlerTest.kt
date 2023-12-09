@@ -1,5 +1,6 @@
 package com.example.network.internal
 
+import com.example.common.IGetMyIdUseCase
 import com.example.common.models.NodeId
 import com.example.network.internal.data.nodes.ConnectionsHandler
 import com.example.network.internal.data.nodes.messagesProxy.IMessagesProxy
@@ -7,6 +8,7 @@ import com.example.network.internal.data.nodes.singleNodeConnection.ISingleNodeC
 import com.example.network.internal.data.nodes.singleNodeConnection.ISingleNodeConnectionHandler
 import com.example.network.models.Port
 import com.example.network.utils.BaseTest
+import com.example.socketsFacade.IClientSocketFactory
 import com.example.socketsFacade.IReadWriteSocket
 import com.example.socketsFacade.IServerSocket
 import com.example.socketsFacade.IServerSocketFactory
@@ -36,6 +38,12 @@ internal class ConnectionHandlerTest : BaseTest() {
 
     @MockK
     private lateinit var messagesProxy: IMessagesProxy
+
+    @MockK
+    private lateinit var getMyIdUseCase: IGetMyIdUseCase
+
+    @MockK
+    private lateinit var clientSocketFactory: IClientSocketFactory
 
     @InjectMockKs
     private lateinit var connectionsHandler: ConnectionsHandler

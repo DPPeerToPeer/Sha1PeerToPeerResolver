@@ -30,6 +30,8 @@ val networkModule = DI.Module(name = "Network") {
             serverSocketFactory = instance(),
             singleNodeConnectionFactory = instance(),
             messagesProxy = instance(),
+            clientSocketFactory = instance(),
+            getMyIdUseCase = instance(),
         )
     }
     bindProvider<ISingleNodeConnectionFactory> {
