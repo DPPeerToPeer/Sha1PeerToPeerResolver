@@ -3,13 +3,12 @@ package org.example.sha1PeerToPeer.ui.start
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.seconds
+import org.example.sha1PeerToPeer.domain.useCases.runProgram.IRunProgramUseCase
 
 class StartViewModel(
-    // private val runProgramUseCase: RunProgramUseCase,
+    private val runProgramUseCase: IRunProgramUseCase,
 ) : StateScreenModel<StartScreenState>(
     initialState = StartScreenState(
         hashToFind = "",
@@ -30,7 +29,7 @@ class StartViewModel(
             mutableState.update { currentstate ->
                 currentstate.copy(isLoading = true)
             }
-            delay(3.seconds)
+            runProgramUseCase.invoke(hashToFind = state.value.hashToFind)
             mutableState.update { currnetState ->
                 currnetState.copy(shouldNavigateToNextScreen = true)
             }

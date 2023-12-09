@@ -10,7 +10,7 @@ interface ICalculationRepository {
     val batches: StateFlow<Map<Batch, BatchState>>
 
     /**
-     * Send message to other nodes via INodesApi and start calculation.
+     * Start calculation on given batch and mark as InProgressMine if not already taken with previous timestamp.
      */
     suspend fun startCalculation(batch: Batch)
 
