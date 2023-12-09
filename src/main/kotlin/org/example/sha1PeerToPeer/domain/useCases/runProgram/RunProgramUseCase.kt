@@ -62,6 +62,9 @@ internal class RunProgramUseCase(
         myPort: Port,
     ) {
         coroutineScope {
+            logger.debug {
+                "Repetitive operations start"
+            }
             launch {
                 discoveryUseCase.invoke(
                     hashToFind = hashToFind,
