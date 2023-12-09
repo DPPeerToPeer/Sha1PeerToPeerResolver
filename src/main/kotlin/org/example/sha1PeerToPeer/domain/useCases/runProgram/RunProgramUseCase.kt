@@ -1,6 +1,7 @@
 package org.example.sha1PeerToPeer.domain.useCases.runProgram
 
 import com.example.calculation.ICalculationRepository
+import com.example.common.IGetCurrentTimeUseCase
 import com.example.common.IGetMyIdUseCase
 import com.example.network.IDiscoveryUseCase
 import com.example.network.IRunConnectionsHandlerUseCase
@@ -27,6 +28,7 @@ internal class RunProgramUseCase(
     private val nodesBroadcastRepository: INodesBroadcastRepository,
     private val getMyIdUseCase: IGetMyIdUseCase,
     private val appScope: CoroutineScope,
+    private val getCurrentTimeUseCase: IGetCurrentTimeUseCase,
 ) : IRunProgramUseCase {
 
     private var job: Job? = null
@@ -75,7 +77,7 @@ internal class RunProgramUseCase(
                     val batch = calculationRepository.getAvailableBatchAndMarkMine()
                     batch?.let {
                         val job = launch {
-                            nodesBroadcastRepository.sendStartedCalculation(batch = batch, timestamp = System.currentTimeMillis())
+                            nodesBroadcastRepository.sendStartedCalculation(batch = batch, timestamp = getCurrentTimeUseCase())
                             calculationRepository.startCalculation(batch = batch)
                         }
                         while (!job.isCompleted) {

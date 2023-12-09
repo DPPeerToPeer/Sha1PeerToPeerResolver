@@ -1,6 +1,8 @@
 package com.example.common.models
 
-class GetCurrentTimeUseCase {
+import com.example.common.IGetCurrentTimeUseCase
 
-    operator fun invoke(): Long = System.currentTimeMillis()
+internal class GetCurrentTimeUseCase : IGetCurrentTimeUseCase {
+
+    override operator fun invoke(): Long = System.currentTimeMillis()
 }

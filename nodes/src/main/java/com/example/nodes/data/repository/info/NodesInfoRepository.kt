@@ -1,13 +1,15 @@
 package com.example.nodes.data.repository.info
 
+import com.example.common.IGetCurrentTimeUseCase
 import com.example.common.models.Node
 import com.example.common.models.NodeId
 import com.example.nodes.domain.models.NodeState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import java.time.Instant
 
-internal class NodesInfoRepository : INodesInfoRepository {
+internal class NodesInfoRepository(
+    private val getCurrentTimeUseCase: IGetCurrentTimeUseCase,
+) : INodesInfoRepository {
 
     private val nodes: MutableStateFlow<Map<Node, NodeState>> = MutableStateFlow(emptyMap())
 
@@ -27,14 +29,14 @@ internal class NodesInfoRepository : INodesInfoRepository {
 
             if (!currentNodeIds.contains(node.id)) {
                 // Node not found, add it to the map
-                currentNodes + (node to NodeState(Instant.now().toEpochMilli()))
+                currentNodes + (node to NodeState(getCurrentTimeUseCase()))
             } else {
                 // Node found, update its state
                 val updatedNodes = currentNodes.toMutableMap()
                 val nodeToFind = currentNodes.keys.find { it.id == node.id }
 
                 if (nodeToFind != null) {
-                    updatedNodes[nodeToFind] = NodeState(Instant.now().toEpochMilli())
+                    updatedNodes[nodeToFind] = NodeState(getCurrentTimeUseCase())
                 }
 
                 updatedNodes.toMap()
