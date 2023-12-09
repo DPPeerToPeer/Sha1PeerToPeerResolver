@@ -1,7 +1,5 @@
 package org.example.sha1PeerToPeer.di
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import org.example.sha1PeerToPeer.domain.useCases.HandleIncomingNodeMessagesUseCase
 import org.example.sha1PeerToPeer.domain.useCases.runProgram.FakeRunProgramUseCase
 import org.example.sha1PeerToPeer.domain.useCases.runProgram.IRunProgramUseCase
@@ -14,7 +12,7 @@ import org.kodein.di.instance
 
 val appModule = DI.Module("App") {
     bindProvider<StartViewModel> {
-        StartViewModel(instance(tag = "Fake"))
+        StartViewModel(instance(tag = "Real"))
     }
     bindSingleton<IRunProgramUseCase>(tag = "Real") {
         RunProgramUseCase(
@@ -26,7 +24,7 @@ val appModule = DI.Module("App") {
             removeNotActiveNodesUseCase = instance(),
             nodesRepository = instance(),
             nodesBroadcastRepository = instance(),
-            appScope = CoroutineScope(SupervisorJob()),
+            appScope = instance(),
             getCurrentTimeUseCase = instance(),
             getMyIdUseCase = instance(),
         )

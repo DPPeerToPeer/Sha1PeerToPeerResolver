@@ -16,12 +16,12 @@ internal class ReadWriteSocket(
         socket.openWriteChannel()
     }
     override suspend fun readLine(): String? {
-        readChannel.awaitContent()
         return readChannel.readUTF8Line()
     }
 
     override suspend fun write(text: String) {
-        writeChannel.writeStringUtf8(s = text)
+        writeChannel.writeStringUtf8(s = text + "\n")
+        writeChannel.flush()
     }
 
     override val remoteIp: String
