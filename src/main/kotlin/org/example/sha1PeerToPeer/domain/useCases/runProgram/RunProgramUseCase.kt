@@ -10,12 +10,10 @@ import com.example.nodes.data.repository.info.INodesInfoRepository
 import com.example.nodes.domain.useCase.RemoveNotActiveNodesUseCase
 import com.example.nodes.domain.useCase.SendHealthUseCase
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import org.example.sha1PeerToPeer.domain.models.ProgramState
 import org.example.sha1PeerToPeer.domain.useCases.HandleIncomingNodeMessagesUseCase
-import java.util.UUID
+import java.util.*
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -34,14 +32,11 @@ internal class RunProgramUseCase(
     private var job: Job? = null
     private val mutex: Mutex = Mutex()
 
-    private val programStateFlow: MutableStateFlow<ProgramState> = MutableStateFlow(ProgramState.NOT_STARTED)
-
     override suspend fun invoke(
         hashToFind: String,
     ) {
         mutex.withLock {
             if (job == null) {
-                programStateFlow.value = ProgramState.INITIALIZING
                 val myPort = runConnectionsHandlerUseCase.invoke()
 
                 job = appScope.launch {
@@ -59,8 +54,6 @@ internal class RunProgramUseCase(
         myPort: Port,
     ) {
         coroutineScope {
-            programStateFlow.value = ProgramState.RUNNING
-
             launch {
                 discoveryUseCase.invoke(
                     hashToFind = hashToFind,
