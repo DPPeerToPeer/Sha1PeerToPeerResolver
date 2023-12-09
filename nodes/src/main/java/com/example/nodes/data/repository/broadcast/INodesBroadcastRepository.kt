@@ -10,18 +10,22 @@ interface INodesBroadcastRepository {
 
     suspend fun sendMyInfo(port: Int)
 
-    suspend fun sendStart()
+    // TODO
+    suspend fun sendStart() // Będzie następnie tworzone //TODO
 
+    // Invokes method from sendNodeMessageUseCase on every node sending NodeMessage.StartedCalculation message
     suspend fun sendStartedCalculation(
         batch: Batch,
         timestamp: Long,
     )
 
+    // Invokes method from sendNodeMessageUseCase on every node sending NodeMessage.EndedCalculation message
     suspend fun sendEndedCalculation(
         batch: Batch,
         calculationResult: CalculationResult,
     )
 
+    // Invokes method from sendNodeMessageUseCase on every node sending NodeMessage.Health message
     suspend fun sendHealth(
         timestamp: Long,
     )
