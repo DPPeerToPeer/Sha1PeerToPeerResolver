@@ -12,7 +12,7 @@ internal class NodesInfoRepository : INodesInfoRepository {
     private val nodes: MutableStateFlow<Map<Node, NodeState>> = MutableStateFlow(emptyMap())
 
     override suspend fun upsertManyNodes(nodes: List<Node>) {
-        for (node in nodes){
+        for (node in nodes) {
             upsertNode(node)
         }
     }
@@ -42,27 +42,25 @@ internal class NodesInfoRepository : INodesInfoRepository {
         }
     }
 
-
     override suspend fun removeNode(id: NodeId) {
         nodes.update { it ->
             val mutableMap = it.toMutableMap()
-            val nodeToFind = it.keys.find { it.id == id}
+            val nodeToFind = it.keys.find { it.id == id }
 
-            if(nodeToFind === null) it
+            if (nodeToFind === null) it
 
             mutableMap.remove(nodeToFind)
             mutableMap.toMap()
-            }
         }
+    }
 
     override suspend fun updateHealth(nodeId: NodeId, timestamp: Long) {
-
         nodes.update { it ->
             val nodesList = it.keys.toList()
 
             val nodeToSwap = nodesList.find { it.id == nodeId }
 
-            if(nodeToSwap === null) return
+            if (nodeToSwap === null) return
 
             val mutableNodeMap = it.toMutableMap()
             mutableNodeMap[nodeToSwap] = NodeState(timestamp)
@@ -71,15 +69,9 @@ internal class NodesInfoRepository : INodesInfoRepository {
         }
     }
 
-    override suspend fun getNodeHealth(node: Node): NodeState{
-        var nodeHealth = nodes.value[node]
+    override suspend fun getNodeHealth(node: Node): NodeState {
+        val nodeHealth = nodes.value[node]
 
         return nodeHealth!!
     }
-
-
 }
-
-
-
-
