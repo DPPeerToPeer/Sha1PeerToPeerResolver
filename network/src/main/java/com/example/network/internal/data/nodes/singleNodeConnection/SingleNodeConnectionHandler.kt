@@ -32,12 +32,7 @@ internal class SingleNodeConnectionHandler(
                     }
                 }
                 .also { this.nodeId = it }
-        } ?: run {
-            logger.error {
-                "listenNodeId returned null"
-            }
-            error("listenNodeId returned null")
-        }
+        } ?: error("listenNodeId returned null")
     }
 
     override suspend fun sendMyId(id: NodeId) {
