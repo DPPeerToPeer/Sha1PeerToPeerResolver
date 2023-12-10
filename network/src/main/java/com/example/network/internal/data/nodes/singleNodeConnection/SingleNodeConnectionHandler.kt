@@ -14,9 +14,8 @@ private val logger = KotlinLogging.logger {}
 internal class SingleNodeConnectionHandler(
     private val socket: IReadWriteSocket,
     private val messagesProxy: IMessagesProxy,
+    private var nodeId: NodeId?,
 ) : ISingleNodeConnectionHandler {
-
-    private var nodeId: NodeId? = null
 
     override suspend fun listenNodeId(): NodeId {
         logger.debug {
@@ -33,12 +32,7 @@ internal class SingleNodeConnectionHandler(
                     }
                 }
                 .also { this.nodeId = it }
-        } ?: run {
-            logger.error {
-                "listenNodeId returned null"
-            }
-            error("listenNodeId returned null")
-        }
+        } ?: error("listenNodeId returned null")
     }
 
     override suspend fun sendMyId(id: NodeId) {

@@ -6,14 +6,10 @@ import com.example.network.ISendNodeMessageUseCase
 import com.example.network.models.NodeMessage
 import com.example.nodes.data.repository.info.INodesInfoRepository
 
-class NodesBroadcastRepository(
+internal class NodesBroadcastRepository(
     private val sendNodeMessageUseCase: ISendNodeMessageUseCase,
     private val nodesInfoRepository: INodesInfoRepository,
 ) : INodesBroadcastRepository {
-
-    override suspend fun sendMyInfo(port: Int) {
-        TODO("Yet not implemented") // In progress
-    }
 
     override suspend fun sendStart() {
         TODO("Not yet implemented") // In progress
