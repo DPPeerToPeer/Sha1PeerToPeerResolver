@@ -8,9 +8,6 @@ import com.example.common.models.CalculationResult
  */
 interface INodesBroadcastRepository {
 
-    suspend fun sendMyInfo(port: Int)
-
-    // TODO
     suspend fun sendStart() // Będzie następnie tworzone //TODO
 
     // Invokes method from sendNodeMessageUseCase on every node sending NodeMessage.StartedCalculation message

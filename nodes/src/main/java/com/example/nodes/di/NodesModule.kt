@@ -1,6 +1,5 @@
 package com.example.nodes.di
 
-import com.example.common.REMOVE_NODE_AFTER_INACTIVITY_DURATION
 import com.example.nodes.data.repository.broadcast.INodesBroadcastRepository
 import com.example.nodes.data.repository.broadcast.NodesBroadcastRepository
 import com.example.nodes.data.repository.info.INodesInfoRepository
@@ -26,7 +25,6 @@ val nodesModule = DI.Module(name = "Nodes") {
         RemoveNotActiveNodesUseCase(
             nodesInfoRepository = instance(),
             getCurrentTimeUseCase = instance(),
-            timeToLive = REMOVE_NODE_AFTER_INACTIVITY_DURATION,
         )
     }
     bindProvider<INodesBroadcastRepository> {
