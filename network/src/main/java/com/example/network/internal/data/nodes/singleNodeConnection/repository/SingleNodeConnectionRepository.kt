@@ -66,6 +66,7 @@ internal class SingleNodeConnectionRepository(
         )
         val singleConnectionsHandler = singleNodeConnectionFactory.create(
             socket = socket,
+            nodeId = node.id,
         )
 
         val myId = getMyIdUseCase()
