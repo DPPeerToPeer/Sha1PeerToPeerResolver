@@ -6,12 +6,13 @@ import com.example.common.models.GetCurrentTimeUseCase
 import com.example.common.models.GetMyIdUseCase
 import org.kodein.di.DI
 import org.kodein.di.bindProvider
+import org.kodein.di.bindSingleton
 
 val commonModule = DI.Module(name = "Common") {
     bindProvider<IGetCurrentTimeUseCase> {
         GetCurrentTimeUseCase()
     }
-    bindProvider<IGetMyIdUseCase> {
+    bindSingleton<IGetMyIdUseCase> {
         GetMyIdUseCase()
     }
 }
