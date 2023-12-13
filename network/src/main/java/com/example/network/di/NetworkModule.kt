@@ -65,7 +65,10 @@ val networkModule = DI.Module(name = "Network") {
         RunConnectionsHandlerUseCase(instance())
     }
     bindProvider<IDiscoveryUseCase> {
-        DiscoveryUseCase(instance())
+        DiscoveryUseCase(
+            discoveryApi = instance(),
+            getMyIdUseCase = instance(),
+        )
     }
     bindSingleton<IMessagesProxy> {
         MessagesProxy()
