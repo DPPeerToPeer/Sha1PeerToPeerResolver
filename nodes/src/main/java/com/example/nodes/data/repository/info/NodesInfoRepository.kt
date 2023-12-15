@@ -5,7 +5,9 @@ import com.example.common.models.Node
 import com.example.common.models.NodeId
 import com.example.nodes.domain.models.NodeState
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
 private val logger = KotlinLogging.logger {}
@@ -38,6 +40,11 @@ internal class NodesInfoRepository(
             }
         }
     }
+
+    override suspend fun getActiveNodesFlow(): Flow<List<Node>> = nodes
+        .map {
+            it.keys.toList()
+        }
 
     override suspend fun upsertNode(node: Node) {
         logger.atDebug {

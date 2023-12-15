@@ -5,10 +5,10 @@ import com.example.common.*
 import com.example.network.IDiscoveryUseCase
 import com.example.network.IRunConnectionsHandlerUseCase
 import com.example.network.models.Port
-import com.example.nodes.data.repository.broadcast.INodesBroadcastRepository
+import com.example.nodes.INodesBroadcastUseCase
+import com.example.nodes.IRemoveNotActiveNodesUseCase
+import com.example.nodes.ISendHealthUseCase
 import com.example.nodes.data.repository.info.INodesInfoRepository
-import com.example.nodes.domain.useCase.RemoveNotActiveNodesUseCase
-import com.example.nodes.domain.useCase.SendHealthUseCase
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
@@ -22,10 +22,10 @@ internal class RunProgramUseCase(
     private val discoveryUseCase: IDiscoveryUseCase,
     private val calculationRepository: ICalculationRepository,
     private val handleIncomingNodeMessagesUseCase: HandleIncomingNodeMessagesUseCase,
-    private val sendHealthUseCase: SendHealthUseCase,
-    private val removeNotActiveNodesUseCase: RemoveNotActiveNodesUseCase,
+    private val sendHealthUseCase: ISendHealthUseCase,
+    private val removeNotActiveNodesUseCase: IRemoveNotActiveNodesUseCase,
     private val nodesRepository: INodesInfoRepository,
-    private val nodesBroadcastRepository: INodesBroadcastRepository,
+    private val nodesBroadcastUseCase: INodesBroadcastUseCase,
     private val getMyIdUseCase: IGetMyIdUseCase,
     private val appScope: CoroutineScope,
     private val getCurrentTimeUseCase: IGetCurrentTimeUseCase,
@@ -86,7 +86,7 @@ internal class RunProgramUseCase(
                     val batch = calculationRepository.getAvailableBatchAndMarkMine()
                     batch?.let {
                         val job = launch {
-                            nodesBroadcastRepository.sendStartedCalculation(batch = batch, timestamp = getCurrentTimeUseCase())
+                            nodesBroadcastUseCase.sendStartedCalculation(batch = batch, timestamp = getCurrentTimeUseCase())
                             calculationRepository.startCalculation(batch = batch)
                         }
                         while (!job.isCompleted) {

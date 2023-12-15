@@ -3,6 +3,7 @@ package com.example.nodes.data.repository.info
 import com.example.common.models.Node
 import com.example.common.models.NodeId
 import com.example.nodes.domain.models.NodeState
+import kotlinx.coroutines.flow.Flow
 
 interface INodesInfoRepository {
 
@@ -11,6 +12,8 @@ interface INodesInfoRepository {
 
     // Method returns nodes
     suspend fun getActiveNodes(): List<Node>
+
+    suspend fun getActiveNodesFlow(): Flow<List<Node>>
 
     // Adds single node to nodes
     suspend fun upsertNode(node: Node)
