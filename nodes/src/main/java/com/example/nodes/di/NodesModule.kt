@@ -5,6 +5,7 @@ import com.example.nodes.IRemoveNotActiveNodesUseCase
 import com.example.nodes.ISendHealthUseCase
 import com.example.nodes.data.repository.info.INodesInfoRepository
 import com.example.nodes.data.repository.info.NodesInfoRepository
+import com.example.nodes.data.repository.info.NodesInfoRepositoryLoggingProxy
 import com.example.nodes.domain.useCase.NodesBroadcastUseCase
 import com.example.nodes.domain.useCase.RemoveNotActiveNodesUseCase
 import com.example.nodes.domain.useCase.SendHealthUseCase
@@ -15,7 +16,11 @@ import org.kodein.di.instance
 
 val nodesModule = DI.Module(name = "Nodes") {
     bindSingleton<INodesInfoRepository> {
-        NodesInfoRepository(getCurrentTimeUseCase = instance())
+        NodesInfoRepositoryLoggingProxy(
+            nodesInfoRepository = NodesInfoRepository(
+                getCurrentTimeUseCase = instance(),
+            ),
+        )
     }
     bindProvider<ISendHealthUseCase> {
         SendHealthUseCase(
