@@ -29,4 +29,20 @@ Responsible for holding information about batches and their states, making calcu
 Jetpack Compose Desktop UI, joins all other modules, gives controle over calculation via UI
 
 ## App logic activity diagram:
+
 ![app_logic_diagram](DP_Activity_Diagram.png)
+
+## 3 Design Patterns used
+
+### Proxy
+We decated to use proxy pattern to make separate class which is responsible for logging calls of methods in NodesRepository. Before we put logging logic directly in NodesRepository so it was quiet messy and we decaded to move that logic somewhere
+
+![proxy_diagram](nodes/proxy_pattern_diagram.png)
+
+### Factory
+We needed to create instances of SingleNodeConnectionHandler on demand directly in SingleNodeConnectionRepository methods. If we used constructor of SingleNodeConnectionHandler directly, it would be harder to make tests of SingleNodeConnectionHandler isolated. By providing factory for creating such classes it's possible to mock newly created instances and verify creation of this objects.  
+
+![factory_diagram](network/factory_pattern_diagram.png)
+
+### Facade
+![facade_diagram]()
