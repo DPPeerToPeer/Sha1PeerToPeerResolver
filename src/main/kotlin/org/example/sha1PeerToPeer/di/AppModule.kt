@@ -27,6 +27,7 @@ val appModule = DI.Module("App") {
             runConnectionsHandlerUseCase = instance(),
             appScope = instance(),
             runRepetitiveOperationsUseCase = instance(),
+            syncTimeUseCase = instance(),
         )
     }
 
