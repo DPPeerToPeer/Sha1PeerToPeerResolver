@@ -25,7 +25,7 @@ internal class NodesInfoRepository(
         return nodes.value.keys.toList()
     }
 
-    override suspend fun getActiveNodesFlow(): Flow<List<Node>> = nodes
+    override fun getActiveNodesFlow(): Flow<List<Node>> = nodes
         .map {
             it.keys.toList()
         }
