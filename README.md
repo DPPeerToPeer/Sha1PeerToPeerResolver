@@ -28,3 +28,5 @@ Responsible for holding information about batches and their states, making calcu
 #### Sha1PeerToPeerResolver (main module)
 Jetpack Compose Desktop UI, joins all other modules, gives controle over calculation via UI
 
+## App logic activity diagram:
+![app_logic_diagram](DP_Activity_Diagram.png)
