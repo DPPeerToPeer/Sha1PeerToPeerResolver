@@ -1,14 +1,15 @@
 package com.example.nodes.domain.useCase
 
 import com.example.common.IGetCurrentTimeUseCase
-import com.example.nodes.data.repository.broadcast.INodesBroadcastRepository
+import com.example.nodes.INodesBroadcastUseCase
+import com.example.nodes.ISendHealthUseCase
 
-class SendHealthUseCase(
-    private val nodesApi: INodesBroadcastRepository,
+internal class SendHealthUseCase(
+    private val nodesBroadcastUseCase: INodesBroadcastUseCase,
     private val getCurrentTimeUseCase: IGetCurrentTimeUseCase,
-) {
+) : ISendHealthUseCase {
 
-    suspend operator fun invoke() {
-        nodesApi.sendHealth(timestamp = getCurrentTimeUseCase())
+    override suspend operator fun invoke() {
+        nodesBroadcastUseCase.sendHealth(timestamp = getCurrentTimeUseCase())
     }
 }
