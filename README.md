@@ -32,6 +32,9 @@ Jetpack Compose Desktop UI, joins all other modules, gives controle over calcula
 
 ![app_logic_diagram](DP_Activity_Diagram.png)
 
+## TCP Sequence Diagram
+![TCPseqDiagram](TCPseqDiagram.png)
+
 ## 3 Design Patterns used
 
 ### Proxy
@@ -46,3 +49,5 @@ We needed to create instances of SingleNodeConnectionHandler on demand directly 
 
 ### Facade
 ![facade_diagram]()
+
+
