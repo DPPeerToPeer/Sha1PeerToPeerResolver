@@ -48,6 +48,11 @@ We needed to create instances of SingleNodeConnectionHandler on demand directly 
 ![factory_diagram](network/factory_pattern_diagram.png)
 
 ### Facade
-![facade_diagram]()
+The basic functionality that have to be implemented is a connection between different computers.
+The connection is based on a TCP/IP stack sockets from external library. The problem is that a lot of
+objects have to be initialised, it is a need for tracking dependencies and calling the methods in the right order.
+The solution is implementing the facade. It allows an user to easily utilize the most important functions by calling
+SocketsFacadeModules' methods.
+![facade_diagram](sockets-facade/sockets_facade_diagram.png)
 
 
