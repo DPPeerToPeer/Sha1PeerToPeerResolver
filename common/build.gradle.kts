@@ -14,4 +14,5 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     implementation("org.kodein.di:kodein-di:7.19.0")
     implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
+    implementation("com.lyft.kronos:kronos-java:0.0.1-alpha11")
 }

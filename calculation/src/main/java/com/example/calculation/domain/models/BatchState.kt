@@ -1,5 +1,6 @@
 package com.example.calculation.domain.models
 
+import com.example.common.models.CalculationResult
 import com.example.common.models.NodeId
 
 sealed interface BatchState {
@@ -13,5 +14,7 @@ sealed interface BatchState {
 
     data class InProgressMine(val startTimestamp: Long) : BatchState
 
-    object Checked : BatchState
+    data class Checked(
+        val result: CalculationResult,
+    ) : BatchState
 }

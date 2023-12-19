@@ -13,7 +13,7 @@ interface INodesInfoRepository {
     // Method returns nodes
     suspend fun getActiveNodes(): List<Node>
 
-    suspend fun getActiveNodesFlow(): Flow<List<Node>>
+    fun getActiveNodesFlow(): Flow<List<Node>>
 
     // Adds single node to nodes
     suspend fun upsertNode(node: Node)

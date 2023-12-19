@@ -1,5 +1,6 @@
 package org.example.sha1PeerToPeer.domain.useCases.runProgram
 
+import com.example.common.ISyncTimeUseCase
 import com.example.network.IRunConnectionsHandlerUseCase
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
@@ -15,6 +16,7 @@ internal class RunProgramUseCase(
     private val runConnectionsHandlerUseCase: IRunConnectionsHandlerUseCase,
     private val appScope: CoroutineScope,
     private val runRepetitiveOperationsUseCase: RunRepetitiveOperationsUseCase,
+    private val syncTimeUseCase: ISyncTimeUseCase,
 ) : IRunProgramUseCase {
 
     private var job: Job? = null
@@ -31,6 +33,7 @@ internal class RunProgramUseCase(
         }
         mutex.withLock {
             if (job == null) {
+                syncTimeUseCase()
                 val myPort = runConnectionsHandlerUseCase.invoke()
 
                 job = appScope.launch {

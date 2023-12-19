@@ -48,7 +48,9 @@ internal class RunRepetitiveOperationsUseCase(
                     val batch = calculationRepository.getAvailableBatchAndMarkMine()
                     batch?.let {
                         val job = launch {
-                            nodesBroadcastUseCase.sendStartedCalculation(batch = batch, timestamp = getCurrentTimeUseCase())
+                            launch {
+                                nodesBroadcastUseCase.sendStartedCalculation(batch = batch, timestamp = getCurrentTimeUseCase())
+                            }
                             calculationRepository.startCalculation(batch = batch)
                         }
                         while (!job.isCompleted) {
@@ -57,6 +59,7 @@ internal class RunRepetitiveOperationsUseCase(
                                 job.cancel()
                                 break
                             }
+                            delay(CHECK_IS_BATCH_TAKEN_INTERVAL)
                         }
                     } ?: delay(TRY_AGAIN_DELAY_IF_NO_BATCH_AVAILABLE)
                 }
