@@ -35,6 +35,12 @@ Jetpack Compose Desktop UI, joins all other modules, gives controle over calcula
 ## TCP Sequence Diagram
 ![TCPseqDiagram](TCPseqDiagram.png)
 
+## Deployment Diagram (local network)
+![TCPseqDiagram](DeploymentDiagramLocal.png)
+
+## Deployment Diagram (global)
+![TCPseqDiagram](DeploymentDiagramGlobal.png)
+
 ## 3 Design Patterns used
 
 ### Proxy
