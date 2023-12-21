@@ -8,8 +8,6 @@ import com.example.common.models.CalculationResult
  */
 interface INodesBroadcastUseCase {
 
-    suspend fun sendStart()
-
     suspend fun sendStartedCalculation(
         batch: Batch,
         timestamp: Long,
