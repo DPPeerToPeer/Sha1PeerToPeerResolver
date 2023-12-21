@@ -12,10 +12,6 @@ internal class NodesBroadcastUseCase(
     private val nodesInfoRepository: INodesInfoRepository,
 ) : INodesBroadcastUseCase {
 
-    override suspend fun sendStart() {
-        TODO("Not yet implemented")
-    }
-
     override suspend fun sendStartedCalculation(batch: Batch, timestamp: Long) {
         val message = NodeMessage.StartedCalculation(batch, timestamp)
         val activeNodesList = nodesInfoRepository.getActiveNodes()
