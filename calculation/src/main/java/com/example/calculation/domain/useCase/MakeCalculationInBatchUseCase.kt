@@ -1,11 +1,12 @@
 package com.example.calculation.domain.useCase
 
+import com.example.calculation.IMakeCalculationInBatchUseCase
 import com.example.common.models.Batch
 import com.example.common.models.CalculationResult
 
-internal class MakeCalculationInBatchUseCase {
+internal class MakeCalculationInBatchUseCase : IMakeCalculationInBatchUseCase {
 
-    operator fun invoke(batch: Batch): CalculationResult {
+    override operator fun invoke(batch: Batch): CalculationResult {
         TODO()
     }
 }
