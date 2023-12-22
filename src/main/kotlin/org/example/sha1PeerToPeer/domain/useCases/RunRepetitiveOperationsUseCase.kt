@@ -72,7 +72,10 @@ internal class RunRepetitiveOperationsUseCase(
             }
             launch {
                 while (isActive) {
-                    removeNotActiveNodesUseCase()
+                    val removedNodes = removeNotActiveNodesUseCase()
+                    removedNodes.forEach {
+                        calculationRepository.marchBatchesOfThisNodeAvailable(nodeId = it.id)
+                    }
                     delay(REMOVE_NODE_AFTER_INACTIVITY_DURATION)
                 }
             }

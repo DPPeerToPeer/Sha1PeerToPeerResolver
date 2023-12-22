@@ -38,4 +38,9 @@ interface ICalculationRepository {
      * Mark BatchState of batch as checked
      */
     suspend fun markBatchChecked(batch: Batch)
+
+    /**
+     * Mark batches which are in state InProgressOtherNode with nodeId equal nodeId as Available
+     */
+    suspend fun marchBatchesOfThisNodeAvailable(nodeId: NodeId)
 }
