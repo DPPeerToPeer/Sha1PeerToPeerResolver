@@ -37,4 +37,8 @@ internal class CalculationRepository() : ICalculationRepository {
     override suspend fun markBatchChecked(batch: Batch) {
         TODO("Not yet implemented")
     }
+
+    override suspend fun marchBatchesOfThisNodeAvailable(nodeId: NodeId) {
+        TODO("Not yet implemented")
+    }
 }
