@@ -6,7 +6,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
-internal class NodesInfoRepositoryLoggingProxy(
+internal class NodesInfoRepositoryLoggingDecorator(
     private val nodesInfoRepository: NodesInfoRepository,
 ) : INodesInfoRepository by nodesInfoRepository {
     override suspend fun upsertManyNodes(nodes: List<Node>) {

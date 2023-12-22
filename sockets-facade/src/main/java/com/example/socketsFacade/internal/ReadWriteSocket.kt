@@ -9,10 +9,10 @@ internal class ReadWriteSocket(
     private val socket: Socket,
 ) : IReadWriteSocket {
 
-    private val readChannel by lazy {
+    private val readChannel: ByteReadChannel by lazy {
         socket.openReadChannel()
     }
-    private val writeChannel by lazy {
+    private val writeChannel: ByteWriteChannel by lazy {
         socket.openWriteChannel()
     }
     override suspend fun readLine(): String? {
