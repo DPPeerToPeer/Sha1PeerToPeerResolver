@@ -3,22 +3,10 @@ package com.example.calculation.domain.useCase
 import com.example.calculation.IMakeCalculationInBatchUseCase
 import com.example.common.models.Batch
 import com.example.common.models.CalculationResult
-import java.security.MessageDigest
-import java.sql.DriverManager.println
 
-internal class MakeCalculationInBatchUseCase: IMakeCalculationInBatchUseCase {
-    fun sha1(input: String): String {
-        val bytes = input.toByteArray()
-        val md = MessageDigest.getInstance("SHA-1")
-        val digest = md.digest(bytes)
-
-        val result = StringBuilder()
-        for (byte in digest) {
-            result.append(String.format("%02x", byte))
-        }
-
-        return result.toString()
-    }
+internal class MakeCalculationInBatchUseCase(
+    private val sha1UseCase: Sha1UseCase,
+) : IMakeCalculationInBatchUseCase {
 
     class FoundException(message: String) : Exception(message)
 
@@ -28,6 +16,8 @@ internal class MakeCalculationInBatchUseCase: IMakeCalculationInBatchUseCase {
         batch: Batch,
         hashToFind: String,
     ): CalculationResult {
+        println("Invoking")
+
         val znaki = (97..122).map { it.toChar() } + (65..90).map { it.toChar() } + (48..57).map { it.toChar() }
         var start = batch.start
         val end = batch.end
@@ -61,18 +51,16 @@ internal class MakeCalculationInBatchUseCase: IMakeCalculationInBatchUseCase {
                     var remainingChars = start.substring(start.length - ktoraLiteraOdKonca + 1)
                     text += remainingChars
                 }
-                System.out.println(text)
-                var generatedHash = sha1(text)
+                // println(text)
+                var generatedHash = sha1UseCase(text = text)
                 if (text == end && generatedHash != hashToFind) {
-                    System.out.println("KONIEC ----- limit wyczerpany!!!")
-                    System.exit(0)
+                    println("KONIEC ----- limit wyczerpany!!!")
                     throw LimitExceededException("Limit wyczerpany")
                 }
                 if (generatedHash == hashToFind) {
-                    System.out.println("Znaleziono: $text")
+                    println("Znaleziono: $text")
                     foundedWord = text
                     found = true
-                    System.exit(0)
                     throw FoundException("Znaleziono: $text")
                 }
                 if (ktoraLiteraOdKonca - 1 > 0 && !found) {
@@ -97,7 +85,7 @@ internal class MakeCalculationInBatchUseCase: IMakeCalculationInBatchUseCase {
             while (!found) {
                 if (start.length < end.length) {
                     val newWord = "a".repeat(actualNewLength + 1)
-                    System.out.println("nowe a: $newWord")
+                    println("nowe a: $newWord")
                     actualNewLength++
                     checkAllCombinationsOfNLongStartWord(newWord)
                 }

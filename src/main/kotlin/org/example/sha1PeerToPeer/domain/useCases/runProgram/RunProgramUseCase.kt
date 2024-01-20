@@ -1,5 +1,6 @@
 package org.example.sha1PeerToPeer.domain.useCases.runProgram
 
+import com.example.calculation.ICalculationRepository
 import com.example.common.ISyncTimeUseCase
 import com.example.network.IRunConnectionsHandlerUseCase
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -17,6 +18,7 @@ internal class RunProgramUseCase(
     private val appScope: CoroutineScope,
     private val runRepetitiveOperationsUseCase: RunRepetitiveOperationsUseCase,
     private val syncTimeUseCase: ISyncTimeUseCase,
+    private val calculationRepository: ICalculationRepository,
 ) : IRunProgramUseCase {
 
     private var job: Job? = null
@@ -33,6 +35,7 @@ internal class RunProgramUseCase(
         }
         mutex.withLock {
             if (job == null) {
+                calculationRepository.fillBatchesDB()
                 syncTimeUseCase()
                 val myPort = runConnectionsHandlerUseCase.invoke()
 

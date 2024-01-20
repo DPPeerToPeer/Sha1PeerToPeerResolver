@@ -28,6 +28,7 @@ val appModule = DI.Module("App") {
             appScope = instance(),
             runRepetitiveOperationsUseCase = instance(),
             syncTimeUseCase = instance(),
+            calculationRepository = instance(),
         )
     }
 

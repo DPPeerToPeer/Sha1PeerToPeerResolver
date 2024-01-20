@@ -1,0 +1,43 @@
+import com.example.calculation.data.repository.db.BatchStateDB;
+
+CREATE TABLE BatchDb (
+  id INTEGER PRIMARY KEY NOT NULL,
+  start TEXT NOT NULL,
+  end TEXT NOT NULL,
+  state TEXT AS BatchStateDB NOT NULL,
+  timestampTaken INTEGER,
+  otherNodeId TEXT,
+  found_word TEXT
+);
+
+
+selectAll:
+SELECT *
+FROM BatchDb;
+
+selectBatchesByOtherNodeId:
+SELECT *
+FROM BatchDb
+WHERE otherNodeId = ?;
+
+markBatchesAvailable:
+UPDATE BatchDb SET state = 'AVAILABLE', timestampTaken = NULL, otherNodeId = NULL, found_word = NULL WHERE id IN :batchIds;
+
+selectByStartEnd:
+SELECT * FROM BatchDb WHERE start = ? AND end = ? LIMIT 1;
+
+selectAvailable:
+SELECT * FROM BatchDb WHERE state == 'AVAILABLE' LIMIT 1;
+
+changeStateOfBatch:
+UPDATE BatchDb SET state = :state, timestampTaken = :timestamp, otherNodeId = :otherNodeId, found_word = :found_word WHERE id = :batchId;
+
+changeStateOfBatchByStartEnd:
+UPDATE BatchDb SET state = :state, timestampTaken = :timestamp, otherNodeId = :otherNodeId, found_word = :found_word WHERE start = :start AND end = :end;
+
+insert:
+INSERT INTO BatchDb(start, end, state, timestampTaken, otherNodeId, found_word)
+VALUES (?, ?, ?, ?, ?, ?);
+
+removeAll:
+DELETE FROM BatchDb;

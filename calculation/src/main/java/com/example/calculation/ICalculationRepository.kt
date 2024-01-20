@@ -1,18 +1,15 @@
 package com.example.calculation
 
-import com.example.calculation.domain.models.BatchState
 import com.example.common.models.Batch
+import com.example.common.models.CalculationResult
 import com.example.common.models.NodeId
-import kotlinx.coroutines.flow.StateFlow
 
 interface ICalculationRepository {
-
-    val batches: StateFlow<Map<Batch, BatchState>>
 
     /**
      * Start calculation on given batch and mark as InProgressMine if not already taken with previous timestamp.
      */
-    suspend fun startCalculation(batch: Batch)
+    suspend fun startCalculation(batch: Batch): CalculationResult
 
     /**
      * Get available batch and mark BatchState as InProgressMine
@@ -42,5 +39,7 @@ interface ICalculationRepository {
     /**
      * Mark batches which are in state InProgressOtherNode with nodeId equal nodeId as Available
      */
-    suspend fun marchBatchesOfThisNodeAvailable(nodeId: NodeId)
+    suspend fun markBatchesOfThisNodeAvailable(nodeId: NodeId)
+
+    suspend fun fillBatchesDB()
 }
