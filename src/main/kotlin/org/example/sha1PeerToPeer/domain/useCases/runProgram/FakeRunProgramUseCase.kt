@@ -8,4 +8,6 @@ class FakeRunProgramUseCase : IRunProgramUseCase {
     override suspend fun invoke(hashToFind: String) {
         delay(3.seconds)
     }
+
+    override fun cancelOperations() {}
 }

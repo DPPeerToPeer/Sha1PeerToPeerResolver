@@ -9,7 +9,10 @@ interface ICalculationRepository {
     /**
      * Start calculation on given batch and mark as InProgressMine if not already taken with previous timestamp.
      */
-    suspend fun startCalculation(batch: Batch): CalculationResult
+    suspend fun startCalculation(
+        batch: Batch,
+        hashToFind: String,
+    ): CalculationResult
 
     /**
      * Get available batch and mark BatchState as InProgressMine

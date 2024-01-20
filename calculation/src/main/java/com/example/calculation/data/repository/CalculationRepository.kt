@@ -15,8 +15,11 @@ internal class CalculationRepository(
     private val makeCalculationInBatchUseCase: MakeCalculationInBatchUseCase,
 ) : ICalculationRepository {
 
-    override suspend fun startCalculation(batch: Batch): CalculationResult =
-        makeCalculationInBatchUseCase(batch = batch, hashToFind = "f7a9e24777ec23212c54d7a350bc5bea5477fdbb")
+    override suspend fun startCalculation(
+        batch: Batch,
+        hashToFind: String,
+    ): CalculationResult =
+        makeCalculationInBatchUseCase(batch = batch, hashToFind = hashToFind)
 
     override suspend fun getAvailableBatchAndMarkMine(): Batch? =
         dao.getAvailableBatchAndMarkMine(timestamp = getCurrentTimeUseCase())

@@ -6,6 +6,7 @@ import com.example.network.IRunConnectionsHandlerUseCase
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -47,5 +48,9 @@ internal class RunProgramUseCase(
                 }
             }
         }
+    }
+
+    override fun cancelOperations() {
+        job?.cancelChildren()
     }
 }
