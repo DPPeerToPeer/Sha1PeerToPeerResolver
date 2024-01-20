@@ -6,14 +6,21 @@ import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import com.example.Database
 import com.example.calculation.BatchDb
 import com.example.calculation.domain.models.BatchState
+import com.example.calculation.domain.useCase.CreateBatchesUseCase
 import com.example.common.models.Batch
 import com.example.common.models.CalculationResult
 import com.example.common.models.NodeId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-internal class CalculationDao : ICalculationDao {
+internal class CalculationDao(
+    createBatchesUseCase: CreateBatchesUseCase,
+) : ICalculationDao {
     private val driver: SqlDriver = JdbcSqliteDriver("jdbc:sqlite:test.db")
+
+    private val batchesChannel by lazy {
+        createBatchesUseCase()
+    }
 
     init {
         // Database.Schema.create(driver)
@@ -27,12 +34,12 @@ internal class CalculationDao : ICalculationDao {
 
     override suspend fun getBatchState(batch: Batch): BatchState = withContext(Dispatchers.IO) {
         db.batchDbQueries.selectByStartEnd(start = batch.start, end = batch.end)
-            .executeAsOne()
-            .toDomainBatchState()
+            .executeAsOneOrNull()
+            ?.toDomainBatchState() ?: BatchState.Available
     }
 
     override suspend fun getAvailableBatchAndMarkMine(timestamp: Long): Batch? = withContext(Dispatchers.IO) {
-        db.batchDbQueries.transactionWithResult {
+        val batchFromDb = db.batchDbQueries.transactionWithResult {
             db.batchDbQueries.selectAvailable().executeAsOneOrNull()?.also { availableBatch ->
                 db.batchDbQueries.changeStateOfBatch(
                     state = BatchStateDB.MINE,
@@ -42,6 +49,22 @@ internal class CalculationDao : ICalculationDao {
                     found_word = null,
                 )
             }?.toDomain()
+        }
+
+        batchFromDb ?: getNextBatchIfNotInDb()
+    }
+
+    private suspend fun getNextBatchIfNotInDb(): Batch? {
+        val nextBatch = batchesChannel.receive()
+        val resultOrNull = db.batchDbQueries.selectByStartEnd(
+            start = nextBatch.start,
+            end = nextBatch.end,
+        ).executeAsOneOrNull()
+
+        return if (resultOrNull != null) {
+            getNextBatchIfNotInDb()
+        } else {
+            nextBatch
         }
     }
 
@@ -85,6 +108,15 @@ internal class CalculationDao : ICalculationDao {
                         )
                     }
                 }
+            } ?: run {
+                db.batchDbQueries.insert(
+                    start = batch.start,
+                    end = batch.end,
+                    state = BatchStateDB.TAKEN_OTHER_NODE,
+                    timestampTaken = timestamp,
+                    otherNodeId = nodeId.id,
+                    found_word = null,
+                )
             }
         }
     }

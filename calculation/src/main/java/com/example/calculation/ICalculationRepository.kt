@@ -41,5 +41,5 @@ interface ICalculationRepository {
      */
     suspend fun markBatchesOfThisNodeAvailable(nodeId: NodeId)
 
-    suspend fun fillBatchesDB()
+    suspend fun initialiseDB()
 }

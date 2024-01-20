@@ -16,8 +16,7 @@ internal class CalculationRepository(
 ) : ICalculationRepository {
 
     override suspend fun startCalculation(batch: Batch): CalculationResult =
-        makeCalculationInBatchUseCase(batch = batch, hashToFind = "31a44c325422f27f1d22d06d58ed81e513ca808e")
-            .also(::println)
+        makeCalculationInBatchUseCase(batch = batch, hashToFind = "f7a9e24777ec23212c54d7a350bc5bea5477fdbb")
 
     override suspend fun getAvailableBatchAndMarkMine(): Batch? =
         dao.getAvailableBatchAndMarkMine(timestamp = getCurrentTimeUseCase())
@@ -41,15 +40,15 @@ internal class CalculationRepository(
         dao.markBatchesOfThisNodeAvailable(nodeId = nodeId)
     }
 
-    override suspend fun fillBatchesDB() {
-        // TODO: Create real batches
+    override suspend fun initialiseDB() {
         dao.clearDb()
-        listOf(
-            Batch(start = "a", end = "9"),
-            Batch(start = "aa", end = "99"),
-            Batch(start = "aaa", end = "999"),
-        ).forEach {
-            dao.insertBatch(batch = it)
-        }
+
+//        listOf(
+//            Batch(start = "a", end = "9"),
+//            Batch(start = "aa", end = "99"),
+//            Batch(start = "aaa", end = "999"),
+//        ).forEach {
+//            dao.insertBatch(batch = it)
+//        }
     }
 }

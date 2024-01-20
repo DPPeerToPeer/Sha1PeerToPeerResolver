@@ -35,7 +35,7 @@ internal class RunProgramUseCase(
         }
         mutex.withLock {
             if (job == null) {
-                calculationRepository.fillBatchesDB()
+                calculationRepository.initialiseDB()
                 syncTimeUseCase()
                 val myPort = runConnectionsHandlerUseCase.invoke()
 

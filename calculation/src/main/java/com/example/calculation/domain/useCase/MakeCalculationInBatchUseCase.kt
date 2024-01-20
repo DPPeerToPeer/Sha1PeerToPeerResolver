@@ -6,6 +6,7 @@ import com.example.common.models.CalculationResult
 
 internal class MakeCalculationInBatchUseCase(
     private val sha1UseCase: Sha1UseCase,
+    private val getAvailableCharsUseCase: GetAvailableCharsUseCase,
 ) : IMakeCalculationInBatchUseCase {
 
     class FoundException(message: String) : Exception(message)
@@ -18,7 +19,7 @@ internal class MakeCalculationInBatchUseCase(
     ): CalculationResult {
         println("Invoking")
 
-        val znaki = (97..122).map { it.toChar() } + (65..90).map { it.toChar() } + (48..57).map { it.toChar() }
+        val znaki = getAvailableCharsUseCase()
         var start = batch.start
         val end = batch.end
         var found = false
@@ -96,60 +97,5 @@ internal class MakeCalculationInBatchUseCase(
             return CalculationResult.NotFound
         }
         return CalculationResult.NotFound
-
-        // //DLA BATCHYY
-//        var batch_size = 5
-//        var batches = mutableListOf<Pair<String, String>>()
-//
-//        fun iterateLastNElementsForGenerating(
-//            start: String,
-//            ktoraLiteraOdKonca: Int,
-//            end: String,
-//        ) {
-//            var newElem = start.substring(0, start.length - ktoraLiteraOdKonca)
-//            val indeksNastepnegoZnaku =
-//                if (start.length - ktoraLiteraOdKonca != start.length) {
-//                    znaki.indexOf(start[start.length - ktoraLiteraOdKonca])
-//                } else {
-//                    znaki.indexOf(start[0])
-//                }
-//
-//            for (i in znaki.subList(indeksNastepnegoZnaku, znaki.size)) {
-//                var text = newElem + i
-//                if (ktoraLiteraOdKonca >= 2) {
-//                    val remainingChars = start.substring(start.length - ktoraLiteraOdKonca + 1)
-// //                    newElem += remainingChars
-//                    text += remainingChars
-//                }
-//
-//                batches.add(Pair(text + "aaaa", text + "9999"))
-//                println(Pair(text + "aaaa", text + "9999"))
-//
-//                if (text == end) {
-//                    println("KONIEC ----- limit wyczerpany!!!")
-//                }
-//
-//                if (ktoraLiteraOdKonca - 1 > 0) {
-//                    iterateLastNElementsForGenerating(text, ktoraLiteraOdKonca - 1, end)
-//                }
-//            }
-//        }
-//
-//        for (i in batch_size until 11) {
-//            if (i == batch_size) {
-//                println("POCZĄTEK: a     KONIEC: " + "9".repeat(batch_size - 1))
-//                batches.add(Pair("a", "9".repeat(batch_size - 1)))
-//                println(Pair("a", "9".repeat(batch_size - 1)))
-//            } else {
-//                iterateLastNElementsForGenerating(
-//                    "a".repeat(i - batch_size),
-//                    i - batch_size,
-//                    "9".repeat(i - batch_size),
-//                )
-//            }
-//        }
-//
-//        return CalculationResult.NotFound
-//    }
     }
 }
