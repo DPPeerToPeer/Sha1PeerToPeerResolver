@@ -1,10 +1,12 @@
 package org.example.sha1PeerToPeer.domain.useCases.runProgram
 
+import com.example.calculation.ICalculationRepository
 import com.example.common.ISyncTimeUseCase
 import com.example.network.IRunConnectionsHandlerUseCase
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -17,6 +19,7 @@ internal class RunProgramUseCase(
     private val appScope: CoroutineScope,
     private val runRepetitiveOperationsUseCase: RunRepetitiveOperationsUseCase,
     private val syncTimeUseCase: ISyncTimeUseCase,
+    private val calculationRepository: ICalculationRepository,
 ) : IRunProgramUseCase {
 
     private var job: Job? = null
@@ -33,6 +36,7 @@ internal class RunProgramUseCase(
         }
         mutex.withLock {
             if (job == null) {
+                calculationRepository.initialiseDB()
                 syncTimeUseCase()
                 val myPort = runConnectionsHandlerUseCase.invoke()
 
@@ -44,5 +48,9 @@ internal class RunProgramUseCase(
                 }
             }
         }
+    }
+
+    override fun cancelOperations() {
+        job?.cancelChildren()
     }
 }

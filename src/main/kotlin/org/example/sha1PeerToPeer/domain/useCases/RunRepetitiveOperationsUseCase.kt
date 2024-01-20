@@ -2,6 +2,7 @@ package org.example.sha1PeerToPeer.domain.useCases
 
 import com.example.calculation.ICalculationRepository
 import com.example.common.*
+import com.example.common.models.CalculationResult
 import com.example.network.IDiscoveryUseCase
 import com.example.network.models.Port
 import com.example.nodes.INodesBroadcastUseCase
@@ -20,6 +21,8 @@ internal class RunRepetitiveOperationsUseCase(
     private val nodesBroadcastUseCase: INodesBroadcastUseCase,
     private val getMyIdUseCase: IGetMyIdUseCase,
     private val getCurrentTimeUseCase: IGetCurrentTimeUseCase,
+    private val resultsFoundUseCase: ResultFoundUseCase,
+    private val appScope: CoroutineScope,
 ) {
 
     suspend operator fun invoke(
@@ -51,11 +54,28 @@ internal class RunRepetitiveOperationsUseCase(
                             launch {
                                 nodesBroadcastUseCase.sendStartedCalculation(batch = batch, timestamp = getCurrentTimeUseCase())
                             }
-                            calculationRepository.startCalculation(batch = batch)
+                            val calculationResult = calculationRepository
+                                .startCalculation(batch = batch, hashToFind = hashToFind)
+
+                            when (calculationResult) {
+                                is CalculationResult.NotFound -> {
+                                    appScope.launch {
+                                        nodesBroadcastUseCase.sendEndedCalculation(
+                                            batch = batch,
+                                            calculationResult = calculationResult,
+                                        )
+                                    }
+                                    calculationRepository.markBatchChecked(batch = batch)
+                                }
+                                is CalculationResult.Found -> {
+                                    resultsFoundUseCase(solution = calculationResult.text, batch = batch)
+                                }
+                            }
                         }
                         while (!job.isCompleted) {
                             ensureActive()
-                            if (calculationRepository.isBatchTakenByOtherNode(batch = batch)) {
+                            if (calculationRepository.isBatchTakenByOtherNodeOrChecked(batch = batch)) {
+                                println("Cancelling batch $batch")
                                 job.cancel()
                                 break
                             }
@@ -74,7 +94,7 @@ internal class RunRepetitiveOperationsUseCase(
                 while (isActive) {
                     val removedNodes = removeNotActiveNodesUseCase()
                     removedNodes.forEach {
-                        calculationRepository.marchBatchesOfThisNodeAvailable(nodeId = it.id)
+                        calculationRepository.markBatchesOfThisNodeAvailable(nodeId = it.id)
                     }
                     delay(REMOVE_NODE_AFTER_INACTIVITY_DURATION)
                 }

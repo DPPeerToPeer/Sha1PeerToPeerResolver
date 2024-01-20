@@ -1,6 +1,7 @@
 package org.example.sha1PeerToPeer.di
 
 import org.example.sha1PeerToPeer.domain.useCases.HandleIncomingNodeMessagesUseCase
+import org.example.sha1PeerToPeer.domain.useCases.ResultFoundUseCase
 import org.example.sha1PeerToPeer.domain.useCases.RunRepetitiveOperationsUseCase
 import org.example.sha1PeerToPeer.domain.useCases.runProgram.FakeRunProgramUseCase
 import org.example.sha1PeerToPeer.domain.useCases.runProgram.IRunProgramUseCase
@@ -19,7 +20,13 @@ val appModule = DI.Module("App") {
     bindProvider<CalculationViewModel> {
         CalculationViewModel(
             nodesRepository = instance(),
-            calculationRepository = instance(),
+            resultFoundUseCase = instance(),
+            runProgramUseCase = instance(tag = "Real"),
+        )
+    }
+    bindSingleton {
+        ResultFoundUseCase(
+            nodesBroadcastUseCase = instance(),
         )
     }
     bindSingleton<IRunProgramUseCase>(tag = "Real") {
@@ -28,6 +35,7 @@ val appModule = DI.Module("App") {
             appScope = instance(),
             runRepetitiveOperationsUseCase = instance(),
             syncTimeUseCase = instance(),
+            calculationRepository = instance(),
         )
     }
 
@@ -42,6 +50,8 @@ val appModule = DI.Module("App") {
             nodesBroadcastUseCase = instance(),
             getCurrentTimeUseCase = instance(),
             getMyIdUseCase = instance(),
+            resultsFoundUseCase = instance(),
+            appScope = instance(),
         )
     }
 
@@ -55,6 +65,7 @@ val appModule = DI.Module("App") {
             calculationRepository = instance(),
             nodesRepository = instance(),
             getIpOfNodeUseCase = instance(),
+            resultFoundUseCase = instance(),
         )
     }
 }

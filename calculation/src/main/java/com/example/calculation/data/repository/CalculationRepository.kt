@@ -1,44 +1,59 @@
 package com.example.calculation.data.repository
 
 import com.example.calculation.ICalculationRepository
+import com.example.calculation.data.repository.db.ICalculationDao
 import com.example.calculation.domain.models.BatchState
+import com.example.calculation.domain.useCase.MakeCalculationInBatchUseCase
+import com.example.common.IGetCurrentTimeUseCase
 import com.example.common.models.Batch
+import com.example.common.models.CalculationResult
 import com.example.common.models.NodeId
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.sync.Mutex
 
-internal class CalculationRepository() : ICalculationRepository {
+internal class CalculationRepository(
+    private val dao: ICalculationDao,
+    private val getCurrentTimeUseCase: IGetCurrentTimeUseCase,
+    private val makeCalculationInBatchUseCase: MakeCalculationInBatchUseCase,
+) : ICalculationRepository {
 
-    override val batches: StateFlow<Map<Batch, BatchState>>
-        get() = _batches.asStateFlow()
+    override suspend fun startCalculation(
+        batch: Batch,
+        hashToFind: String,
+    ): CalculationResult =
+        makeCalculationInBatchUseCase(batch = batch, hashToFind = hashToFind)
 
-    private val _batches = MutableStateFlow<Map<Batch, BatchState>>(emptyMap())
+    override suspend fun getAvailableBatchAndMarkMine(): Batch? =
+        dao.getAvailableBatchAndMarkMine(timestamp = getCurrentTimeUseCase())
 
-    private val mutex = Mutex()
-
-    override suspend fun startCalculation(batch: Batch) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getAvailableBatchAndMarkMine(): Batch? {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun isBatchTakenByOtherNode(batch: Batch): Boolean {
-        TODO("Not yet implemented")
-    }
+    override suspend fun isBatchTakenByOtherNodeOrChecked(batch: Batch): Boolean =
+        dao.getBatchState(batch = batch).let {
+            it is BatchState.InProgressOtherNode || it is BatchState.Checked
+        }
 
     override suspend fun markBatchInProgressIfWasFirst(batch: Batch, nodeId: NodeId, timestamp: Long) {
-        TODO("Not yet implemented")
+        dao.markBatchInProgressIfWasFirst(
+            batch = batch,
+            nodeId = nodeId,
+            timestamp = timestamp,
+        )
     }
 
     override suspend fun markBatchChecked(batch: Batch) {
-        TODO("Not yet implemented")
+        dao.markBatchChecked(batch = batch)
     }
 
-    override suspend fun marchBatchesOfThisNodeAvailable(nodeId: NodeId) {
-        TODO("Not yet implemented")
+    override suspend fun markBatchesOfThisNodeAvailable(nodeId: NodeId) {
+        dao.markBatchesOfThisNodeAvailable(nodeId = nodeId)
+    }
+
+    override suspend fun initialiseDB() {
+        dao.clearDb()
+
+//        listOf(
+//            Batch(start = "a", end = "9"),
+//            Batch(start = "aa", end = "99"),
+//            Batch(start = "aaa", end = "999"),
+//        ).forEach {
+//            dao.insertBatch(batch = it)
+//        }
     }
 }

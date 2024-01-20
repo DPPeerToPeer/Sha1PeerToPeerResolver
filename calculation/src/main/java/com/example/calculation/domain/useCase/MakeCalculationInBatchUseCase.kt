@@ -3,10 +3,106 @@ package com.example.calculation.domain.useCase
 import com.example.calculation.IMakeCalculationInBatchUseCase
 import com.example.common.models.Batch
 import com.example.common.models.CalculationResult
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.withContext
 
-internal class MakeCalculationInBatchUseCase : IMakeCalculationInBatchUseCase {
+internal class MakeCalculationInBatchUseCase(
+    private val sha1UseCase: ISha1UseCase,
+    private val getAvailableCharsUseCase: GetAvailableCharsUseCase,
+) : IMakeCalculationInBatchUseCase {
 
-    override operator fun invoke(batch: Batch): CalculationResult {
-        TODO()
-    }
+    class FoundException(message: String) : Exception(message)
+
+    class LimitExceededException(message: String) : Exception(message)
+
+    override suspend operator fun invoke(
+        batch: Batch,
+        hashToFind: String,
+    ): CalculationResult =
+        withContext(Dispatchers.Default) {
+            println("Started calculation for $batch")
+
+            val znaki = getAvailableCharsUseCase()
+            var start = batch.start
+            val end = batch.end
+            var found = false
+            var foundedWord = ""
+            var actualNewLength = start.length
+
+            fun iterateLastNElements(
+                start: String,
+                ktoraLiteraOdKonca: Int,
+            ) {
+                var newElem = ""
+                if (ktoraLiteraOdKonca != 0) {
+                    newElem = start.substring(0, start.length - ktoraLiteraOdKonca)
+                } // //pobiera znaki od początku do sprawdzanego znaku
+
+                var indeksNastepnegoZnaku = // //pobiera indeksNastepngoZnaku
+                    if (start.length - ktoraLiteraOdKonca != start.length) {
+                        znaki.indexOf(start[start.length - ktoraLiteraOdKonca])
+                    } else {
+                        znaki.indexOf(start[0])
+                    }
+
+                for (i in znaki.subList(
+                    indeksNastepnegoZnaku,
+                    znaki.size,
+                )) { // //Zamienia w petli sprawdzany zank na nastęny
+                    var text = newElem
+                    text += i
+                    if (ktoraLiteraOdKonca > 1) {
+                        val remainingChars = start.substring(start.length - ktoraLiteraOdKonca + 1)
+                        text += remainingChars
+                    }
+                    // println(text)
+                    ensureActive()
+                    val generatedHash = sha1UseCase(text = text)
+                    if (text == end && generatedHash != hashToFind) {
+                        println("KONIEC ----- limit wyczerpany!!!")
+                        throw LimitExceededException("Limit wyczerpany")
+                    }
+                    if (generatedHash == hashToFind) {
+                        println("Znaleziono: $text")
+                        foundedWord = text
+                        found = true
+                        throw FoundException("Znaleziono: $text")
+                    }
+                    if (ktoraLiteraOdKonca - 1 > 0 && !found) {
+                        iterateLastNElements(text, ktoraLiteraOdKonca - 1)
+                    }
+                }
+            }
+
+            fun checkAllCombinationsOfNLongStartWord(start: String) {
+                iterateLastNElements(start, start.length - 1)
+                if (!found) {
+                    for (i in znaki.subList(znaki.indexOf(start[0]) + 1, znaki.size)) {
+                        if (start.length - 1 != 0) {
+                            val newElem = i + "a".repeat(start.length - 1)
+                            ensureActive()
+                            iterateLastNElements(newElem, start.length - 1)
+                        }
+                    }
+                }
+            }
+            try {
+                checkAllCombinationsOfNLongStartWord(start)
+                while (!found) {
+                    ensureActive()
+                    if (start.length < end.length) {
+                        val newWord = "a".repeat(actualNewLength + 1)
+                        println("nowe a: $newWord")
+                        actualNewLength++
+                        checkAllCombinationsOfNLongStartWord(newWord)
+                    }
+                }
+            } catch (e: FoundException) {
+                return@withContext CalculationResult.Found(foundedWord)
+            } catch (e: LimitExceededException) {
+                return@withContext CalculationResult.NotFound
+            }
+            return@withContext CalculationResult.NotFound
+        }
 }
