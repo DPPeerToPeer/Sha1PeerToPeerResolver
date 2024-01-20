@@ -2,9 +2,9 @@ package com.example.calculation.domain.useCase
 
 import java.security.MessageDigest
 
-internal class Sha1UseCase {
+internal class Sha1UseCase : ISha1UseCase {
 
-    operator fun invoke(text: String): String {
+    override operator fun invoke(text: String): String {
         val bytes = text.toByteArray()
         val md = MessageDigest.getInstance("SHA-1")
         val digest = md.digest(bytes)

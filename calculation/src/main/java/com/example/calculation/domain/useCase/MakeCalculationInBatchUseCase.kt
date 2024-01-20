@@ -5,7 +5,7 @@ import com.example.common.models.Batch
 import com.example.common.models.CalculationResult
 
 internal class MakeCalculationInBatchUseCase(
-    private val sha1UseCase: Sha1UseCase,
+    private val sha1UseCase: ISha1UseCase,
     private val getAvailableCharsUseCase: GetAvailableCharsUseCase,
 ) : IMakeCalculationInBatchUseCase {
 
