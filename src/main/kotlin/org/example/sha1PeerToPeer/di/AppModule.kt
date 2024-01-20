@@ -51,6 +51,7 @@ val appModule = DI.Module("App") {
             getCurrentTimeUseCase = instance(),
             getMyIdUseCase = instance(),
             resultsFoundUseCase = instance(),
+            appScope = instance(),
         )
     }
 
@@ -64,6 +65,7 @@ val appModule = DI.Module("App") {
             calculationRepository = instance(),
             nodesRepository = instance(),
             getIpOfNodeUseCase = instance(),
+            resultFoundUseCase = instance(),
         )
     }
 }

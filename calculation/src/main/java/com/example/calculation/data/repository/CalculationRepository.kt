@@ -24,8 +24,10 @@ internal class CalculationRepository(
     override suspend fun getAvailableBatchAndMarkMine(): Batch? =
         dao.getAvailableBatchAndMarkMine(timestamp = getCurrentTimeUseCase())
 
-    override suspend fun isBatchTakenByOtherNode(batch: Batch): Boolean =
-        dao.getBatchState(batch = batch) is BatchState.InProgressOtherNode
+    override suspend fun isBatchTakenByOtherNodeOrChecked(batch: Batch): Boolean =
+        dao.getBatchState(batch = batch).let {
+            it is BatchState.InProgressOtherNode || it is BatchState.Checked
+        }
 
     override suspend fun markBatchInProgressIfWasFirst(batch: Batch, nodeId: NodeId, timestamp: Long) {
         dao.markBatchInProgressIfWasFirst(

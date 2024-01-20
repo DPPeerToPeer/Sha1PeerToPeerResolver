@@ -22,6 +22,7 @@ internal class RunRepetitiveOperationsUseCase(
     private val getMyIdUseCase: IGetMyIdUseCase,
     private val getCurrentTimeUseCase: IGetCurrentTimeUseCase,
     private val resultsFoundUseCase: ResultFoundUseCase,
+    private val appScope: CoroutineScope,
 ) {
 
     suspend operator fun invoke(
@@ -58,6 +59,12 @@ internal class RunRepetitiveOperationsUseCase(
 
                             when (calculationResult) {
                                 is CalculationResult.NotFound -> {
+                                    appScope.launch {
+                                        nodesBroadcastUseCase.sendEndedCalculation(
+                                            batch = batch,
+                                            calculationResult = calculationResult,
+                                        )
+                                    }
                                     calculationRepository.markBatchChecked(batch = batch)
                                 }
                                 is CalculationResult.Found -> {
@@ -67,7 +74,8 @@ internal class RunRepetitiveOperationsUseCase(
                         }
                         while (!job.isCompleted) {
                             ensureActive()
-                            if (calculationRepository.isBatchTakenByOtherNode(batch = batch)) {
+                            if (calculationRepository.isBatchTakenByOtherNodeOrChecked(batch = batch)) {
+                                println("Cancelling batch $batch")
                                 job.cancel()
                                 break
                             }

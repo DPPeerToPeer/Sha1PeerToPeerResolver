@@ -1,6 +1,7 @@
 package com.example.calculation.data.repository.db
 
 import app.cash.sqldelight.EnumColumnAdapter
+import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import com.example.Database
@@ -10,9 +11,9 @@ import com.example.calculation.domain.useCase.CreateBatchesUseCase
 import com.example.common.models.Batch
 import com.example.common.models.CalculationResult
 import com.example.common.models.NodeId
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
+@OptIn(DelicateCoroutinesApi::class)
 internal class CalculationDao(
     createBatchesUseCase: CreateBatchesUseCase,
 ) : ICalculationDao {
@@ -41,6 +42,7 @@ internal class CalculationDao(
     override suspend fun getAvailableBatchAndMarkMine(timestamp: Long): Batch? = withContext(Dispatchers.IO) {
         val batchFromDb = db.batchDbQueries.transactionWithResult {
             db.batchDbQueries.selectAvailable().executeAsOneOrNull()?.also { availableBatch ->
+                println("Exchanging previously empty batch $availableBatch to MINE")
                 db.batchDbQueries.changeStateOfBatch(
                     state = BatchStateDB.MINE,
                     otherNodeId = null,
@@ -51,7 +53,17 @@ internal class CalculationDao(
             }?.toDomain()
         }
 
-        batchFromDb ?: getNextBatchIfNotInDb()
+        batchFromDb ?: getNextBatchIfNotInDb()?.also {
+            println("Inserting batch $it as MINE")
+            db.batchDbQueries.insert(
+                start = it.start,
+                end = it.end,
+                state = BatchStateDB.MINE,
+                otherNodeId = null,
+                timestampTaken = timestamp,
+                found_word = null,
+            )
+        }
     }
 
     private suspend fun getNextBatchIfNotInDb(): Batch? {
@@ -122,14 +134,31 @@ internal class CalculationDao(
     }
 
     override suspend fun markBatchChecked(batch: Batch) {
-        db.batchDbQueries.changeStateOfBatchByStartEnd(
-            state = BatchStateDB.CHECKED,
-            timestamp = null,
-            otherNodeId = null,
-            found_word = null,
-            start = batch.start,
-            end = batch.end,
-        )
+        db.batchDbQueries.transaction {
+            val currentBatch = db.batchDbQueries
+                .selectByStartEnd(start = batch.start, end = batch.end)
+                .executeAsOneOrNull()
+
+            if (currentBatch == null) {
+                db.batchDbQueries.insert(
+                    state = BatchStateDB.CHECKED,
+                    timestampTaken = null,
+                    otherNodeId = null,
+                    found_word = null,
+                    start = batch.start,
+                    end = batch.end,
+                )
+            } else {
+                db.batchDbQueries.changeStateOfBatchByStartEnd(
+                    state = BatchStateDB.CHECKED,
+                    timestamp = null,
+                    otherNodeId = null,
+                    found_word = null,
+                    start = batch.start,
+                    end = batch.end,
+                )
+            }
+        }
     }
 
     override suspend fun markBatchesOfThisNodeAvailable(nodeId: NodeId) {

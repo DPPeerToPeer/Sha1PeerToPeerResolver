@@ -22,7 +22,7 @@ interface ICalculationRepository {
     /**
      * Return true if BatchState of given batch is InProgressOtherNode or Checked
      */
-    suspend fun isBatchTakenByOtherNode(batch: Batch): Boolean
+    suspend fun isBatchTakenByOtherNodeOrChecked(batch: Batch): Boolean
 
     /**
      * Mark BatchState of batch as InProgressOtherNode if it's not already Checked.
