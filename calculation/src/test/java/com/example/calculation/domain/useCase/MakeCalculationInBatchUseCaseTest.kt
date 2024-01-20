@@ -13,6 +13,8 @@ internal class MakeCalculationInBatchUseCaseTest : BaseTest() {
     @MockK
     private lateinit var sha1UseCase: Sha1UseCase
 
+    private val getAvailableCharsUseCase: GetAvailableCharsUseCase = GetAvailableCharsUseCase()
+
     @InjectMockKs
     private lateinit var useCase: MakeCalculationInBatchUseCase
 
