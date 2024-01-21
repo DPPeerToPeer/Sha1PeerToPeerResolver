@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.map
 internal class CalculationDao(
     createBatchesUseCase: CreateBatchesUseCase,
 ) : ICalculationDao {
-    private val driver: SqlDriver = JdbcSqliteDriver("jdbc:sqlite:test.db")
+    private val driver: SqlDriver = JdbcSqliteDriver("jdbc:sqlite:batches.db")
 
     private val batchesChannel by lazy {
         createBatchesUseCase()
