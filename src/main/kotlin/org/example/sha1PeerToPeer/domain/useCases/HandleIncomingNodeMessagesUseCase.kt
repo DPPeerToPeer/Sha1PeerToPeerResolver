@@ -1,11 +1,13 @@
 package org.example.sha1PeerToPeer.domain.useCases
 
 import com.example.calculation.ICalculationRepository
+import com.example.calculation.domain.models.BatchState
 import com.example.common.models.CalculationResult
 import com.example.common.models.Node
 import com.example.network.IGetIpOfNodeUseCase
 import com.example.network.IListenNodeMessagesUseCase
 import com.example.network.models.NodeMessage
+import com.example.nodes.INodesBroadcastUseCase
 import com.example.nodes.data.repository.info.INodesInfoRepository
 
 internal class HandleIncomingNodeMessagesUseCase(
@@ -14,6 +16,7 @@ internal class HandleIncomingNodeMessagesUseCase(
     private val nodesRepository: INodesInfoRepository,
     private val getIpOfNodeUseCase: IGetIpOfNodeUseCase,
     private val resultFoundUseCase: ResultFoundUseCase,
+    private val nodesBroadcastUseCase: INodesBroadcastUseCase,
 ) {
 
     suspend operator fun invoke() {
@@ -39,6 +42,18 @@ internal class HandleIncomingNodeMessagesUseCase(
                             nodeId = nodeId,
                             timestamp = message.timestamp,
                         )
+                        val batchState = calculationRepository.getBatchState(batch = message.batch)
+                        if (batchState is BatchState.Checked) {
+                            nodesBroadcastUseCase.sendEndedCalculation(
+                                batch = message.batch,
+                                calculationResult = batchState.result,
+                            )
+                        } else if (batchState is BatchState.InProgressMine) {
+                            nodesBroadcastUseCase.sendStartedCalculation(
+                                batch = message.batch,
+                                timestamp = batchState.startTimestamp,
+                            )
+                        }
                     }
                     is NodeMessage.EndedCalculation -> {
                         calculationRepository.markBatchChecked(batch = message.batch)

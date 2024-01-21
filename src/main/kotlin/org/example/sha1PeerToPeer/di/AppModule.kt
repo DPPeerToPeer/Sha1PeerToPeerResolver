@@ -67,6 +67,7 @@ val appModule = DI.Module("App") {
             nodesRepository = instance(),
             getIpOfNodeUseCase = instance(),
             resultFoundUseCase = instance(),
+            nodesBroadcastUseCase = instance(),
         )
     }
 }

@@ -1,5 +1,6 @@
 package com.example.calculation
 
+import com.example.calculation.domain.models.BatchState
 import com.example.calculation.domain.models.CalculationStatistics
 import com.example.common.models.Batch
 import com.example.common.models.CalculationResult
@@ -49,4 +50,6 @@ interface ICalculationRepository {
     fun observeStatistics(): Flow<CalculationStatistics>
 
     suspend fun initialiseDB()
+
+    suspend fun getBatchState(batch: Batch): BatchState
 }

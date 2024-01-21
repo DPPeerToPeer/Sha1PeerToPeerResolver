@@ -31,6 +31,9 @@ internal class CalculationRepository(
             it is BatchState.InProgressOtherNode || it is BatchState.Checked
         }
 
+    override suspend fun getBatchState(batch: Batch): BatchState =
+        dao.getBatchState(batch = batch)
+
     override suspend fun markBatchInProgressIfWasFirst(batch: Batch, nodeId: NodeId, timestamp: Long) {
         dao.markBatchInProgressIfWasFirst(
             batch = batch,
