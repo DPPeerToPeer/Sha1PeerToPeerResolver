@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
-@OptIn(DelicateCoroutinesApi::class)
 internal class CalculationDao(
     createBatchesUseCase: CreateBatchesUseCase,
 ) : ICalculationDao {
@@ -28,7 +27,7 @@ internal class CalculationDao(
     }
 
     init {
-        // Database.Schema.create(driver)
+        Database.Schema.create(driver)
     }
     private val db = Database(
         driver = driver,
@@ -236,14 +235,5 @@ internal class CalculationDao(
                 CalculationResult.NotFound
             },
         )
-    }
-
-    init {
-        GlobalScope.launch {
-            db.batchDbQueries.selectAll().asFlow()
-                .collect {
-                    println(it.executeAsList())
-                }
-        }
     }
 }

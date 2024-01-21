@@ -1,6 +1,6 @@
 import com.example.calculation.data.repository.db.BatchStateDB;
 
-CREATE TABLE BatchDb (
+CREATE TABLE IF NOT EXISTS BatchDb (
   id INTEGER PRIMARY KEY NOT NULL,
   start TEXT NOT NULL,
   end TEXT NOT NULL,
