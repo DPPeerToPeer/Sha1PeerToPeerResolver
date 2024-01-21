@@ -10,6 +10,7 @@ import com.example.common.models.Batch
 import com.example.common.models.CalculationResult
 import com.example.common.models.NodeId
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 
 internal class CalculationRepository(
     private val dao: ICalculationDao,
@@ -33,6 +34,10 @@ internal class CalculationRepository(
 
     override suspend fun getBatchState(batch: Batch): BatchState =
         dao.getBatchState(batch = batch)
+
+    override suspend fun awaitBatchTakenByOthers(batch: Batch) {
+        dao.observeBatchState(batch = batch).first { it is BatchState.InProgressOtherNode || it is BatchState.Checked }
+    }
 
     override suspend fun markBatchInProgressIfWasFirst(batch: Batch, nodeId: NodeId, timestamp: Long) {
         dao.markBatchInProgressIfWasFirst(

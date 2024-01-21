@@ -42,6 +42,12 @@ internal class CalculationDao(
             ?.toDomainBatchState() ?: BatchState.Available
     }
 
+    override fun observeBatchState(batch: Batch): Flow<BatchState> = db.batchDbQueries.selectByStartEnd(start = batch.start, end = batch.end).asFlow()
+        .map {
+            it.executeAsOneOrNull()
+                ?.toDomainBatchState() ?: BatchState.Available
+        }.flowOn(Dispatchers.IO)
+
     override suspend fun getAvailableBatchAndMarkMine(timestamp: Long): Batch? = withContext(Dispatchers.IO) {
         val batchFromDb = db.batchDbQueries.transactionWithResult {
             db.batchDbQueries.selectAvailable().executeAsOneOrNull()?.also { availableBatch ->

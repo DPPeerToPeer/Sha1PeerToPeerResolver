@@ -72,15 +72,10 @@ internal class RunRepetitiveOperationsUseCase(
                                 }
                             }
                         }
-                        while (!job.isCompleted) {
-                            ensureActive()
-                            if (calculationRepository.isBatchTakenByOtherNodeOrChecked(batch = batch)) {
-                                println("Cancelling batch $batch")
-                                job.cancel()
-                                break
-                            }
-                            delay(CHECK_IS_BATCH_TAKEN_INTERVAL)
-                        }
+
+                        calculationRepository.awaitBatchTakenByOthers(batch = batch)
+                        println("Cancelling job with batch $batch")
+                        job.cancel()
                     } ?: delay(TRY_AGAIN_DELAY_IF_NO_BATCH_AVAILABLE)
                 }
             }

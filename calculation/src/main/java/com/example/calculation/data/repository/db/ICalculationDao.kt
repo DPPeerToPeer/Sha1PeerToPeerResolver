@@ -22,4 +22,6 @@ internal interface ICalculationDao {
     suspend fun clearDb()
 
     fun observeStatistics(): Flow<CalculationStatistics>
+
+    fun observeBatchState(batch: Batch): Flow<BatchState>
 }

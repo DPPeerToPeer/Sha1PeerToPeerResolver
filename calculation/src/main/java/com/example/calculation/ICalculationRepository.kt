@@ -52,4 +52,6 @@ interface ICalculationRepository {
     suspend fun initialiseDB()
 
     suspend fun getBatchState(batch: Batch): BatchState
+
+    suspend fun awaitBatchTakenByOthers(batch: Batch)
 }
