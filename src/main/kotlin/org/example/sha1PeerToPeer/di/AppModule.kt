@@ -22,6 +22,7 @@ val appModule = DI.Module("App") {
             nodesRepository = instance(),
             resultFoundUseCase = instance(),
             runProgramUseCase = instance(tag = "Real"),
+            calculationRepository = instance(),
         )
     }
     bindSingleton {

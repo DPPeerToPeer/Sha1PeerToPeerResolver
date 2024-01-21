@@ -1,14 +1,13 @@
 package org.example.sha1PeerToPeer.ui.calculation
 
-import com.example.calculation.domain.models.BatchState
-import com.example.common.models.Batch
+import com.example.calculation.domain.models.CalculationStatistics
 import com.example.common.models.Node
 
 sealed interface CalculationState {
     object Loading : CalculationState
 
     data class Calculation(
-        val batches: Map<Batch, BatchState> = emptyMap(),
+        val statistics: CalculationStatistics,
         val nodes: List<Node> = emptyList(),
     ) : CalculationState
 

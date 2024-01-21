@@ -1,8 +1,10 @@
 package com.example.calculation
 
+import com.example.calculation.domain.models.CalculationStatistics
 import com.example.common.models.Batch
 import com.example.common.models.CalculationResult
 import com.example.common.models.NodeId
+import kotlinx.coroutines.flow.Flow
 
 interface ICalculationRepository {
 
@@ -43,6 +45,8 @@ interface ICalculationRepository {
      * Mark batches which are in state InProgressOtherNode with nodeId equal nodeId as Available
      */
     suspend fun markBatchesOfThisNodeAvailable(nodeId: NodeId)
+
+    fun observeStatistics(): Flow<CalculationStatistics>
 
     suspend fun initialiseDB()
 }

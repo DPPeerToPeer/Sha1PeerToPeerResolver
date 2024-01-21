@@ -41,3 +41,6 @@ VALUES (?, ?, ?, ?, ?, ?);
 
 removeAll:
 DELETE FROM BatchDb;
+
+selectStatistics:
+SELECT state, COUNT(*) FROM BatchDb GROUP BY state;

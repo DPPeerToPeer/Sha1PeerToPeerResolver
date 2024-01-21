@@ -3,11 +3,13 @@ package com.example.calculation.data.repository
 import com.example.calculation.ICalculationRepository
 import com.example.calculation.data.repository.db.ICalculationDao
 import com.example.calculation.domain.models.BatchState
+import com.example.calculation.domain.models.CalculationStatistics
 import com.example.calculation.domain.useCase.MakeCalculationInBatchUseCase
 import com.example.common.IGetCurrentTimeUseCase
 import com.example.common.models.Batch
 import com.example.common.models.CalculationResult
 import com.example.common.models.NodeId
+import kotlinx.coroutines.flow.Flow
 
 internal class CalculationRepository(
     private val dao: ICalculationDao,
@@ -44,6 +46,9 @@ internal class CalculationRepository(
     override suspend fun markBatchesOfThisNodeAvailable(nodeId: NodeId) {
         dao.markBatchesOfThisNodeAvailable(nodeId = nodeId)
     }
+
+    override fun observeStatistics(): Flow<CalculationStatistics> =
+        dao.observeStatistics()
 
     override suspend fun initialiseDB() {
         dao.clearDb()
