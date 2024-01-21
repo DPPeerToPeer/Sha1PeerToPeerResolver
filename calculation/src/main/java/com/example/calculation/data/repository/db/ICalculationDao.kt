@@ -24,4 +24,6 @@ internal interface ICalculationDao {
     fun observeStatistics(): Flow<CalculationStatistics>
 
     fun observeBatchState(batch: Batch): Flow<BatchState>
+
+    suspend fun getBatchMarkedMine(): Pair<Batch, BatchState.InProgressMine>?
 }

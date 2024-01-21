@@ -15,6 +15,11 @@ selectAll:
 SELECT *
 FROM BatchDb;
 
+selectBatchMarkedMine:
+SELECT * FROM BatchDb
+WHERE state == 'MINE'
+LIMIT 1;
+
 selectBatchesByOtherNodeId:
 SELECT *
 FROM BatchDb

@@ -30,4 +30,6 @@ sealed interface NodeMessage {
     data class Health(
         val timestamp: Long,
     ) : NodeMessage
+
+    object InitedConnection : NodeMessage
 }

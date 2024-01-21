@@ -48,6 +48,12 @@ internal class CalculationDao(
                 ?.toDomainBatchState() ?: BatchState.Available
         }.flowOn(Dispatchers.IO)
 
+    override suspend fun getBatchMarkedMine(): Pair<Batch, BatchState.InProgressMine>? =
+        db.batchDbQueries.selectBatchMarkedMine().executeAsOneOrNull()?.let {
+            checkNotNull(it.timestampTaken)
+            it.toDomain() to BatchState.InProgressMine(startTimestamp = it.timestampTaken)
+        }
+
     override suspend fun getAvailableBatchAndMarkMine(timestamp: Long): Batch? = withContext(Dispatchers.IO) {
         val batchFromDb = db.batchDbQueries.transactionWithResult {
             db.batchDbQueries.selectAvailable().executeAsOneOrNull()?.also { availableBatch ->

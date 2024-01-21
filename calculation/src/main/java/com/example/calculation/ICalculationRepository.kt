@@ -54,4 +54,6 @@ interface ICalculationRepository {
     suspend fun getBatchState(batch: Batch): BatchState
 
     suspend fun awaitBatchTakenByOthers(batch: Batch)
+
+    suspend fun getBatchMarkedMine(): Pair<Batch, BatchState.InProgressMine>?
 }

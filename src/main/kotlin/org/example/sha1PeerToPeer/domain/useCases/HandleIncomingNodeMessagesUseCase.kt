@@ -73,6 +73,15 @@ internal class HandleIncomingNodeMessagesUseCase(
                             timestamp = message.timestamp,
                         )
                     }
+
+                    NodeMessage.InitedConnection -> {
+                        calculationRepository.getBatchMarkedMine()?.let { (batch, state) ->
+                            nodesBroadcastUseCase.sendStartedCalculation(
+                                batch = batch,
+                                timestamp = state.startTimestamp,
+                            )
+                        }
+                    }
                 }
             }
     }

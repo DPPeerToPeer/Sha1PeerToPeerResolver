@@ -39,6 +39,9 @@ internal class CalculationRepository(
         dao.observeBatchState(batch = batch).first { it is BatchState.InProgressOtherNode || it is BatchState.Checked }
     }
 
+    override suspend fun getBatchMarkedMine(): Pair<Batch, BatchState.InProgressMine>? =
+        dao.getBatchMarkedMine()
+
     override suspend fun markBatchInProgressIfWasFirst(batch: Batch, nodeId: NodeId, timestamp: Long) {
         dao.markBatchInProgressIfWasFirst(
             batch = batch,
@@ -60,13 +63,5 @@ internal class CalculationRepository(
 
     override suspend fun initialiseDB() {
         dao.clearDb()
-
-//        listOf(
-//            Batch(start = "a", end = "9"),
-//            Batch(start = "aa", end = "99"),
-//            Batch(start = "aaa", end = "999"),
-//        ).forEach {
-//            dao.insertBatch(batch = it)
-//        }
     }
 }

@@ -32,6 +32,9 @@ internal class SingleNodeConnectionHandler(
                     }
                 }
                 .also { this.nodeId = it }
+                .also {
+                    messagesProxy.onNewMessage(nodeId = it, message = NodeMessage.InitedConnection)
+                }
         } ?: error("listenNodeId returned null")
     }
 
@@ -42,7 +45,9 @@ internal class SingleNodeConnectionHandler(
                 put("id", id)
             }
         }
-        socket.write(text = id.id)
+        socket.write(text = id.id).also {
+            messagesProxy.onNewMessage(nodeId = nodeId!!, message = NodeMessage.InitedConnection)
+        }
     }
 
     override suspend fun listenIncomingMessages() {
