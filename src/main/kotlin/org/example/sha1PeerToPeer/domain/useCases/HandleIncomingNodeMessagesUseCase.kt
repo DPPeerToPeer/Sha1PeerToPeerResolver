@@ -35,6 +35,8 @@ internal class HandleIncomingNodeMessagesUseCase(
                                 ),
                             )
                         }
+
+                        onInitConnection()
                     }
                     is NodeMessage.StartedCalculation -> {
                         calculationRepository.markBatchInProgressIfWasFirst(
@@ -75,14 +77,18 @@ internal class HandleIncomingNodeMessagesUseCase(
                     }
 
                     NodeMessage.InitedConnection -> {
-                        calculationRepository.getBatchMarkedMine()?.let { (batch, state) ->
-                            nodesBroadcastUseCase.sendStartedCalculation(
-                                batch = batch,
-                                timestamp = state.startTimestamp,
-                            )
-                        }
+                        onInitConnection()
                     }
                 }
             }
+    }
+
+    private suspend fun onInitConnection() {
+        calculationRepository.getBatchMarkedMine()?.let { (batch, state) ->
+            nodesBroadcastUseCase.sendStartedCalculation(
+                batch = batch,
+                timestamp = state.startTimestamp,
+            )
+        }
     }
 }

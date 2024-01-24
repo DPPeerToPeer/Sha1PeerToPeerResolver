@@ -32,9 +32,6 @@ internal class SingleNodeConnectionHandler(
                     }
                 }
                 .also { this.nodeId = it }
-                .also {
-                    messagesProxy.onNewMessage(nodeId = it, message = NodeMessage.InitedConnection)
-                }
         } ?: error("listenNodeId returned null")
     }
 
