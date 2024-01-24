@@ -23,11 +23,6 @@ interface ICalculationRepository {
     suspend fun getAvailableBatchAndMarkMine(): Batch?
 
     /**
-     * Return true if BatchState of given batch is InProgressOtherNode or Checked
-     */
-    suspend fun isBatchTakenByOtherNodeOrChecked(batch: Batch): Boolean
-
-    /**
      * Mark BatchState of batch as InProgressOtherNode if it's not already Checked.
      * If it's already InProgress than compare timestamps and put nodeId with lower timestamp
      */
