@@ -4,10 +4,16 @@ import com.example.socketsFacade.IReadWriteSocket
 import io.ktor.network.sockets.*
 import io.ktor.util.network.*
 import io.ktor.utils.io.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 internal class ReadWriteSocket(
     private val socket: Socket,
 ) : IReadWriteSocket {
+
+    private val mutex by lazy {
+        Mutex()
+    }
 
     private val readChannel: ByteReadChannel by lazy {
         socket.openReadChannel()
@@ -20,8 +26,10 @@ internal class ReadWriteSocket(
     }
 
     override suspend fun write(text: String) {
-        writeChannel.writeStringUtf8(s = text + "\n")
-        writeChannel.flush()
+        mutex.withLock {
+            writeChannel.writeStringUtf8(s = text + "\n")
+            writeChannel.flush()
+        }
     }
 
     override val remoteIp: String
