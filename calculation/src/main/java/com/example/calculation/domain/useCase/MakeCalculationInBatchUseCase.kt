@@ -11,9 +11,9 @@ internal class MakeCalculationInBatchUseCase(
     private val sha1UseCase: ISha1UseCase,
     private val getAvailableCharsUseCase: GetAvailableCharsUseCase,
 ) : IMakeCalculationInBatchUseCase {
-    class FoundException(message: String) : Exception(message)
+    private class FoundException(message: String) : Exception(message)
 
-    class LimitExceededException(message: String) : Exception(message)
+    private class LimitExceededException(message: String) : Exception(message)
 
     override suspend operator fun invoke(
         batch: Batch,
@@ -23,7 +23,7 @@ internal class MakeCalculationInBatchUseCase(
             println("Started calculation for $batch")
 
             val chars = getAvailableCharsUseCase()
-            var start = batch.start
+            val start = batch.start
             val end = batch.end
             var found = false
             var foundWord = ""
@@ -38,7 +38,7 @@ internal class MakeCalculationInBatchUseCase(
                     newElem = start.substring(0, start.length - lastNLetter)
                 }
 
-                var nextCharIndex =
+                val nextCharIndex =
                     if (start.length - lastNLetter != start.length) {
                         chars.indexOf(start[start.length - lastNLetter])
                     } else {
