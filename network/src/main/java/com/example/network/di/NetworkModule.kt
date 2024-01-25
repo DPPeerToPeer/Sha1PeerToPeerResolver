@@ -3,7 +3,7 @@ package com.example.network.di
 import com.example.common.di.commonModule
 import com.example.network.*
 import com.example.network.internal.data.discovery.IDiscoveryApi
-import com.example.network.internal.data.discovery.LocalhostDiscoveryApi
+import com.example.network.internal.data.discovery.OverNetworkDiscoveryApi
 import com.example.network.internal.data.nodes.ConnectionsHandler
 import com.example.network.internal.data.nodes.IConnectionsHandler
 import com.example.network.internal.data.nodes.messagesProxy.IMessagesProxy
@@ -74,7 +74,8 @@ val networkModule = DI.Module(name = "Network") {
         MessagesProxy()
     }
     bindProvider<IDiscoveryApi> {
-        LocalhostDiscoveryApi(udpBroadcastSocket = instance())
+        // LocalhostDiscoveryApi(udpBroadcastSocket = instance())
+        OverNetworkDiscoveryApi(instance())
     }
     bindProvider<IGetIpOfNodeUseCase> {
         GetIpOfNodeUseCase(connectionHandler = instance())

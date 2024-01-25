@@ -1,9 +1,11 @@
 package com.example.socketsFacade.di
 
 import com.example.socketsFacade.IClientSocketFactory
+import com.example.socketsFacade.IHttpDiscoveryClient
 import com.example.socketsFacade.IServerSocketFactory
 import com.example.socketsFacade.IUdpBroadcastSocket
 import com.example.socketsFacade.internal.ClientSocketFactory
+import com.example.socketsFacade.internal.HttpDiscoveryClient
 import com.example.socketsFacade.internal.ServerSocketFactory
 import com.example.socketsFacade.internal.UdpBroadcastSocket
 import org.kodein.di.DI
@@ -19,5 +21,8 @@ val socketsFacadeModule = DI.Module(name = "SocketsFacade") {
     }
     bindProvider<IClientSocketFactory> {
         ClientSocketFactory()
+    }
+    bindSingleton<IHttpDiscoveryClient> {
+        HttpDiscoveryClient()
     }
 }
