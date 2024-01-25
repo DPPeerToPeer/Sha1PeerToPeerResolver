@@ -11,10 +11,9 @@ internal class MakeCalculationInBatchUseCase(
     private val sha1UseCase: ISha1UseCase,
     private val getAvailableCharsUseCase: GetAvailableCharsUseCase,
 ) : IMakeCalculationInBatchUseCase {
+    private class FoundException(message: String) : Exception(message)
 
-    class FoundException(message: String) : Exception(message)
-
-    class LimitExceededException(message: String) : Exception(message)
+    private class LimitExceededException(message: String) : Exception(message)
 
     override suspend operator fun invoke(
         batch: Batch,
@@ -23,54 +22,53 @@ internal class MakeCalculationInBatchUseCase(
         withContext(Dispatchers.Default) {
             println("Started calculation for $batch")
 
-            val znaki = getAvailableCharsUseCase()
-            var start = batch.start
+            val chars = getAvailableCharsUseCase()
+            val start = batch.start
             val end = batch.end
             var found = false
-            var foundedWord = ""
+            var foundWord = ""
             var actualNewLength = start.length
 
             fun iterateLastNElements(
                 start: String,
-                ktoraLiteraOdKonca: Int,
+                lastNLetter: Int,
             ) {
                 var newElem = ""
-                if (ktoraLiteraOdKonca != 0) {
-                    newElem = start.substring(0, start.length - ktoraLiteraOdKonca)
-                } // //pobiera znaki od początku do sprawdzanego znaku
+                if (lastNLetter != 0) {
+                    newElem = start.substring(0, start.length - lastNLetter)
+                }
 
-                var indeksNastepnegoZnaku = // //pobiera indeksNastepngoZnaku
-                    if (start.length - ktoraLiteraOdKonca != start.length) {
-                        znaki.indexOf(start[start.length - ktoraLiteraOdKonca])
+                val nextCharIndex =
+                    if (start.length - lastNLetter != start.length) {
+                        chars.indexOf(start[start.length - lastNLetter])
                     } else {
-                        znaki.indexOf(start[0])
+                        chars.indexOf(start[0])
                     }
 
-                for (i in znaki.subList(
-                    indeksNastepnegoZnaku,
-                    znaki.size,
-                )) { // //Zamienia w petli sprawdzany zank na nastęny
+                for (i in chars.subList(
+                    nextCharIndex,
+                    chars.size,
+                )) {
                     var text = newElem
                     text += i
-                    if (ktoraLiteraOdKonca > 1) {
-                        val remainingChars = start.substring(start.length - ktoraLiteraOdKonca + 1)
+                    if (lastNLetter > 1) {
+                        val remainingChars = start.substring(start.length - lastNLetter + 1)
                         text += remainingChars
                     }
-                    // println(text)
                     ensureActive()
                     val generatedHash = sha1UseCase(text = text)
                     if (text == end && generatedHash != hashToFind) {
-                        println("KONIEC ----- limit wyczerpany!!!")
-                        throw LimitExceededException("Limit wyczerpany")
+                        println("END ----- limit exhausted!!!")
+                        throw LimitExceededException("limit exhausted")
                     }
                     if (generatedHash == hashToFind) {
-                        println("Znaleziono: $text")
-                        foundedWord = text
+                        println("Found: $text")
+                        foundWord = text
                         found = true
-                        throw FoundException("Znaleziono: $text")
+                        throw FoundException("Found: $text")
                     }
-                    if (ktoraLiteraOdKonca - 1 > 0 && !found) {
-                        iterateLastNElements(text, ktoraLiteraOdKonca - 1)
+                    if (lastNLetter - 1 > 0 && !found) {
+                        iterateLastNElements(text, lastNLetter - 1)
                     }
                 }
             }
@@ -78,7 +76,7 @@ internal class MakeCalculationInBatchUseCase(
             fun checkAllCombinationsOfNLongStartWord(start: String) {
                 iterateLastNElements(start, start.length - 1)
                 if (!found) {
-                    for (i in znaki.subList(znaki.indexOf(start[0]) + 1, znaki.size)) {
+                    for (i in chars.subList(chars.indexOf(start[0]) + 1, chars.size)) {
                         if (start.length - 1 != 0) {
                             val newElem = i + "a".repeat(start.length - 1)
                             ensureActive()
@@ -93,13 +91,13 @@ internal class MakeCalculationInBatchUseCase(
                     ensureActive()
                     if (start.length < end.length) {
                         val newWord = "a".repeat(actualNewLength + 1)
-                        println("nowe a: $newWord")
+                        println("NEW a: $newWord")
                         actualNewLength++
                         checkAllCombinationsOfNLongStartWord(newWord)
                     }
                 }
             } catch (e: FoundException) {
-                return@withContext CalculationResult.Found(foundedWord)
+                return@withContext CalculationResult.Found(foundWord)
             } catch (e: LimitExceededException) {
                 return@withContext CalculationResult.NotFound
             }

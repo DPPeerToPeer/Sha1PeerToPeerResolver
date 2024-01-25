@@ -55,6 +55,9 @@ Jetpack Compose Desktop UI, joins all other modules, gives control over calculat
 ## Deployment Diagram (global)
 ![DeploymentDiagram](DeploymentDiagramGlobal.png)
 
+## Division into Batches Activity Diagram
+![class diagram](calculation/activityBatchDiagram.png)
+
 ## 3 Design Patterns used
 
 ### Decorator

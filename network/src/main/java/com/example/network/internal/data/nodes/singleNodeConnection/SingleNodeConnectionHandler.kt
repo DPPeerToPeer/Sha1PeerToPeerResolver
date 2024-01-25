@@ -42,7 +42,9 @@ internal class SingleNodeConnectionHandler(
                 put("id", id)
             }
         }
-        socket.write(text = id.id)
+        socket.write(text = id.id).also {
+            messagesProxy.onNewMessage(nodeId = nodeId!!, message = NodeMessage.InitedConnection)
+        }
     }
 
     override suspend fun listenIncomingMessages() {

@@ -10,16 +10,15 @@ import org.example.sha1PeerToPeer.domain.useCases.runProgram.IRunProgramUseCase
 class StartViewModel(
     private val runProgramUseCase: IRunProgramUseCase,
 ) : StateScreenModel<StartScreenState>(
-    initialState = StartScreenState(
-        hashToFind = "",
-        isLoading = false,
-        shouldNavigateToNextScreen = false,
-    ),
-) {
-
+        initialState =
+            StartScreenState(
+                hashToFind = "",
+                isLoading = false,
+                shouldNavigateToNextScreen = false,
+            ),
+    ) {
     fun onHashChange(newHash: String) {
-        mutableState.update { currentState -> // /////mutableState przechowuje aktualny stan ekranu,,, UPDATE-pozwala zmodyfikowac aktualny stan
-            // // tutaj it nazwalismy currentState
+        mutableState.update { currentState ->
             currentState.copy(hashToFind = newHash)
         }
     }

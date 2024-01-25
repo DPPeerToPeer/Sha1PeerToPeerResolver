@@ -75,6 +75,7 @@ val networkModule = DI.Module(name = "Network") {
     }
     bindProvider<IDiscoveryApi> {
         LocalhostDiscoveryApi(udpBroadcastSocket = instance())
+        // OverNetworkDiscoveryApi(instance())
     }
     bindProvider<IGetIpOfNodeUseCase> {
         GetIpOfNodeUseCase(connectionHandler = instance())

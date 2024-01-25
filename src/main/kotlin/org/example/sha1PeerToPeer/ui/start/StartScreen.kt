@@ -19,20 +19,16 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import org.example.sha1PeerToPeer.ui.calculation.CalculationScreen
 
 class StartScreen : Screen {
-
     @Composable
     override fun Content() {
         val screenModel = rememberScreenModel<StartViewModel>()
-        val state by screenModel.state.collectAsState() // / by=.value
-//        val state2 = screenModel.state.collectAsState().value
+        val state by screenModel.state.collectAsState()
 
         val navigator = LocalNavigator.currentOrThrow
 
         if (state.shouldNavigateToNextScreen) {
             navigator.push(CalculationScreen(state.hashToFind))
         }
-
-        // NavigateToCalculationIfProgramIsRunning(programState = state.programState)
 
         Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize().padding(all = 16.dp)) {
             Column(
@@ -46,13 +42,12 @@ class StartScreen : Screen {
                     onValueChange = {
                         screenModel.onHashChange(it)
                     },
-                ) // ///w implementacji onValuechange wykorzystac viewModel
+                )
                 if (state.isLoading) {
                     CircularProgressIndicator()
                 }
                 Button(
                     onClick = {
-//                    navigator.push(CalculationScreen(state.hashToFind))
                         screenModel.onStartClick()
                     },
                     enabled = !state.isLoading,
@@ -63,21 +58,6 @@ class StartScreen : Screen {
         }
     }
 }
-
-/*@Composable
-private fun NavigateToCalculationIfProgramIsRunning(programState: ProgramState) {
-    val navigator = LocalNavigator.currentOrThrow
-
-    LaunchedEffect(programState) {
-        when (programState) {
-            ProgramState.RUNNING -> {
-                navigator.push(CalculationScreen())
-            }
-            else -> {
-            }
-        }
-    }
-}*/
 
 @Composable
 fun SimpleOutlinedTextFieldSample(

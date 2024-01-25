@@ -7,24 +7,27 @@ import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import com.example.Database
 import com.example.calculation.BatchDb
 import com.example.calculation.domain.models.BatchState
+import com.example.calculation.domain.models.CalculationStatistics
 import com.example.calculation.domain.useCase.CreateBatchesUseCase
 import com.example.common.models.Batch
 import com.example.common.models.CalculationResult
 import com.example.common.models.NodeId
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 
-@OptIn(DelicateCoroutinesApi::class)
 internal class CalculationDao(
     createBatchesUseCase: CreateBatchesUseCase,
 ) : ICalculationDao {
-    private val driver: SqlDriver = JdbcSqliteDriver("jdbc:sqlite:test.db")
+    private val driver: SqlDriver = JdbcSqliteDriver("jdbc:sqlite:batches.db")
 
     private val batchesChannel by lazy {
         createBatchesUseCase()
     }
 
     init {
-        // Database.Schema.create(driver)
+        Database.Schema.create(driver)
     }
     private val db = Database(
         driver = driver,
@@ -38,6 +41,18 @@ internal class CalculationDao(
             .executeAsOneOrNull()
             ?.toDomainBatchState() ?: BatchState.Available
     }
+
+    override fun observeBatchState(batch: Batch): Flow<BatchState> = db.batchDbQueries.selectByStartEnd(start = batch.start, end = batch.end).asFlow()
+        .map {
+            it.executeAsOneOrNull()
+                ?.toDomainBatchState() ?: BatchState.Available
+        }.flowOn(Dispatchers.IO)
+
+    override suspend fun getBatchMarkedMine(): Pair<Batch, BatchState.InProgressMine>? =
+        db.batchDbQueries.selectBatchMarkedMine().executeAsOneOrNull()?.let {
+            checkNotNull(it.timestampTaken)
+            it.toDomain() to BatchState.InProgressMine(startTimestamp = it.timestampTaken)
+        }
 
     override suspend fun getAvailableBatchAndMarkMine(timestamp: Long): Batch? = withContext(Dispatchers.IO) {
         val batchFromDb = db.batchDbQueries.transactionWithResult {
@@ -86,7 +101,7 @@ internal class CalculationDao(
                 when (val currentState = current.toDomainBatchState()) {
                     is BatchState.Checked -> {}
                     is BatchState.InProgressOtherNode -> {
-                        if (currentState.startTimestamp < timestamp) {
+                        if (currentState.startTimestamp > timestamp) {
                             db.batchDbQueries.changeStateOfBatchByStartEnd(
                                 start = batch.start,
                                 end = batch.end,
@@ -98,7 +113,7 @@ internal class CalculationDao(
                         }
                     }
                     is BatchState.InProgressMine -> {
-                        if (currentState.startTimestamp < timestamp) {
+                        if (currentState.startTimestamp > timestamp) {
                             db.batchDbQueries.changeStateOfBatchByStartEnd(
                                 start = batch.start,
                                 end = batch.end,
@@ -189,6 +204,20 @@ internal class CalculationDao(
             db.batchDbQueries.removeAll()
         }
     }
+
+    override fun observeStatistics(): Flow<CalculationStatistics> =
+        db.batchDbQueries.selectStatistics().asFlow().map { query ->
+            val resultsMap = query.executeAsList().associate {
+                it.state to it.COUNT
+            }
+
+            CalculationStatistics(
+                availableAndInDb = resultsMap[BatchStateDB.AVAILABLE] ?: 0,
+                checked = resultsMap[BatchStateDB.CHECKED] ?: 0,
+                inProgressMine = resultsMap[BatchStateDB.MINE] ?: 0,
+                inProgressOther = resultsMap[BatchStateDB.TAKEN_OTHER_NODE] ?: 0,
+            )
+        }.flowOn(Dispatchers.IO)
 
     private fun BatchDb.toDomain(): Batch = Batch(
         start = start,

@@ -14,8 +14,7 @@ import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.kodein.rememberScreenModel
 
-class CalculationScreen(private val hashToFind: String) : Screen { // ///val bo zmienna pozostaje na pozniej
-
+class CalculationScreen(private val hashToFind: String) : Screen {
     @Composable
     override fun Content() {
         val screenModel = rememberScreenModel<CalculationViewModel>()
@@ -46,12 +45,16 @@ class CalculationScreen(private val hashToFind: String) : Screen { // ///val bo 
                                 Text(text = "${node.name} (${node.id})")
                             }
                         }
-                        if (state.batches.isNotEmpty()) {
-                            item {
-                                Text(text = "Batches:")
-                            }
-                            items(state.batches.toList()) { (batch, batchState) ->
-                                Text(text = "${batch.start} - ${batch.end} : $batchState")
+
+                        item {
+                            Text(text = "Statistics:")
+                        }
+                        item {
+                            Column {
+                                Text("Checked batches: ${state.statistics.checked}")
+                                Text("In progress by me batches: ${state.statistics.inProgressMine}")
+                                Text("In progress by others batches: ${state.statistics.inProgressOther}")
+                                Text("Empty in DB: ${state.statistics.availableAndInDb}")
                             }
                         }
                     }
