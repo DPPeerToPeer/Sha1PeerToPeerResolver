@@ -13,26 +13,26 @@ internal class CreateBatchesUseCase(
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(): ReceiveChannel<Batch> =
         scope.produce {
-            val batchSize = 5
-            val znaki = getAvailableCharsUseCase()
+            val lengthOfIteratedCharsInWord = 5
+            val chars = getAvailableCharsUseCase()
 
             suspend fun iterateLastNElementsForGenerating(
                 start: String,
-                ktoraLiteraOdKonca: Int,
+                lastNLetter: Int,
                 end: String,
             ) {
-                val newElem = start.substring(0, start.length - ktoraLiteraOdKonca)
-                val indeksNastepnegoZnaku =
-                    if (start.length - ktoraLiteraOdKonca != start.length) {
-                        znaki.indexOf(start[start.length - ktoraLiteraOdKonca])
+                val newElem = start.substring(0, start.length - lastNLetter)
+                val nextCharIndex =
+                    if (start.length - lastNLetter != start.length) {
+                        chars.indexOf(start[start.length - lastNLetter])
                     } else {
-                        znaki.indexOf(start[0])
+                        chars.indexOf(start[0])
                     }
 
-                for (i in znaki.subList(indeksNastepnegoZnaku, znaki.size)) {
+                for (i in chars.subList(nextCharIndex, chars.size)) {
                     var text = newElem + i
-                    if (ktoraLiteraOdKonca >= 2) {
-                        val remainingChars = start.substring(start.length - ktoraLiteraOdKonca + 1)
+                    if (lastNLetter >= 2) {
+                        val remainingChars = start.substring(start.length - lastNLetter + 1)
                         text += remainingChars
                     }
 
@@ -44,29 +44,29 @@ internal class CreateBatchesUseCase(
                     )
 
                     if (text == end) {
-                        println("KONIEC ----- limit wyczerpany!!!")
+                        println("END ----- limit exhausted!!")
                     }
 
-                    if (ktoraLiteraOdKonca - 1 > 0) {
-                        iterateLastNElementsForGenerating(text, ktoraLiteraOdKonca - 1, end)
+                    if (lastNLetter - 1 > 0) {
+                        iterateLastNElementsForGenerating(text, lastNLetter - 1, end)
                     }
                 }
             }
 
-            for (i in batchSize until 11) {
-                if (i == batchSize) {
-                    println("POCZĄTEK: a     KONIEC: " + "9".repeat(batchSize - 1))
+            for (i in lengthOfIteratedCharsInWord until 11) {
+                if (i == lengthOfIteratedCharsInWord) {
+                    println("START: a     END: " + "9".repeat(lengthOfIteratedCharsInWord - 1))
                     send(
                         Batch(
                             start = "a",
-                            end = "9".repeat(batchSize - 1),
+                            end = "9".repeat(lengthOfIteratedCharsInWord - 1),
                         ),
                     )
                 } else {
                     iterateLastNElementsForGenerating(
-                        "a".repeat(i - batchSize),
-                        i - batchSize,
-                        "9".repeat(i - batchSize),
+                        "a".repeat(i - lengthOfIteratedCharsInWord),
+                        i - lengthOfIteratedCharsInWord,
+                        "9".repeat(i - lengthOfIteratedCharsInWord),
                     )
                 }
             }

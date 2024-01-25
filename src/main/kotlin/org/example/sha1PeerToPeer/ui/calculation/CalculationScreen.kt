@@ -14,8 +14,7 @@ import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.kodein.rememberScreenModel
 
-class CalculationScreen(private val hashToFind: String) : Screen { // ///val bo zmienna pozostaje na pozniej
-
+class CalculationScreen(private val hashToFind: String) : Screen {
     @Composable
     override fun Content() {
         val screenModel = rememberScreenModel<CalculationViewModel>()
