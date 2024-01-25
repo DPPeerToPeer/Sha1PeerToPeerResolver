@@ -43,14 +43,13 @@ Jetpack Compose Desktop UI, joins all other modules, gives control over calculat
 ![class diagram](src/main_diagram.png)
 
 ## App logic activity diagram:
-
 ![app_logic_diagram](DP_Activity_Diagram.png)
-
-## TCP Sequence Diagram
-![TCPSeqDiagram](TCPseqDiagram.png)
 
 ## UDP Sequence Diagram
 ![UDP_sequence_diagram.png](UDP_sequence_diagram.png)
+
+## TCP Sequence Diagram
+![TCPSeqDiagram](TCPseqDiagram.png)
 
 ## Deployment Diagram (local network)
 ![DeploymentDiagram](DeploymentDiagramLocal.png)
