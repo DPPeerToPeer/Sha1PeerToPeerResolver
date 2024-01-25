@@ -48,6 +48,9 @@ Jetpack Compose Desktop UI, joins all other modules, gives control over calculat
 ## UDP Sequence Diagram
 ![UDP_sequence_diagram.png](UDP_sequence_diagram.png)
 
+## Discovery Sequence Diagram
+![discovery_sequence_diagram.png](discovery_sequence_diagram.png)
+
 ## TCP Sequence Diagram
 ![TCPSeqDiagram](TCPseqDiagram.png)
 
